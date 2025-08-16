@@ -1,0 +1,21 @@
+[0;1;32m●[0m kamila.service - Assistente Virtual Kamila (Serviço de Usuário)
+     Loaded: loaded (]8;;file://Barba-Branca/home/martins/.config/systemd/user/kamila.service\/home/martins/.config/systemd/user/kamila.service]8;;\; [0;1;32menabled[0m; preset: [0;1;32menabled[0m)
+     Active: [0;1;32mactive (running)[0m since Sun 2025-06-15 11:30:07 -03; 11s ago
+ Invocation: cb68a89fc3ba405fba5459d97c2e2c83
+   Main PID: 7766 (python3)
+      Tasks: 2[0;38;5;245m (limit: 18738)[0m
+     Memory: 64.8M (peak: 71.8M)
+        CPU: 1.007s
+     CGroup: /user.slice/user-1000.slice/user@1000.service/app.slice/kamila.service
+             └─[0;38;5;245m7766 /opt/kamila/venv/bin/python3 /opt/kamila/kamila_avancada/.kamila/main.py[0m
+
+jun 15 11:30:10 Barba-Branca python3[7766]: ALSA lib pcm_a52.c:1036:(_snd_pcm_a52_open) a52 is only for playback
+jun 15 11:30:10 Barba-Branca python3[7766]: ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+jun 15 11:30:10 Barba-Branca python3[7766]: ALSA lib pcm_usb_stream.c:481:(_snd_pcm_usb_stream_open) Invalid card 'card'
+jun 15 11:30:10 Barba-Branca python3[7766]: ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+jun 15 11:30:10 Barba-Branca python3[7766]: ALSA lib pcm_usb_stream.c:481:(_snd_pcm_usb_stream_open) Invalid card 'card'
+jun 15 11:30:10 Barba-Branca python3[7766]: Cannot connect to server socket err = No such file or directory
+jun 15 11:30:10 Barba-Branca python3[7766]: Cannot connect to server request channel
+jun 15 11:30:10 Barba-Branca python3[7766]: jack server is not running or cannot be started
+jun 15 11:30:10 Barba-Branca python3[7766]: JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+jun 15 11:30:10 Barba-Branca python3[7766]: JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock

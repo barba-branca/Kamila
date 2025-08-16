@@ -1,29 +1,14 @@
-# core/interpreter.py
-import logging
+from . import actions
+from .gemini_engine import responder_com_gemini
+from .gemini_ai import responder_gemini
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-def analyze_intent(text):
-    """
-    Analisa o texto e identifica a intenção do usuário de forma mais flexível.
-    """
-    logging.info(f"Interpreter: Analisando texto -> '{text}'")
-    text = text.lower() # Normaliza o texto
-
-    # --- LÓGICA MELHORADA ---
-    # Procura por palavras-chave em vez de frases exatas.
+def interpretar_comando(comando):
+    comando = comando.lower()
     
-    # Intenção de obter a hora
-    if "horas" in text or "hora" in text:
-        logging.info("Interpreter: Intenção 'get_time' identificada.")
-        return {'intent': 'get_time', 'params': {}}
-        
-    # Intenção de obter a previsão do tempo
-    elif "tempo" in text or "previsão" in text or "clima" in text:
-        logging.info("Interpreter: Intenção 'get_weather' identificada.")
-        return {'intent': 'get_weather', 'params': {'location': 'São Paulo'}}
-        
-    # Nenhuma intenção conhecida foi encontrada
-    else:
-        logging.info("Interpreter: Nenhuma intenção conhecida foi identificada.")
-        return {'intent': 'unknown', 'params': {}}
+    if "google" in comando:
+        actions.abrir_site("https://www.google.com")
+        return "Abrindo o Google para você."
+
+    # fallback inteligente com Gemini
+    resposta_ia = responder_com_gemini(comando)
+    return resposta_ia

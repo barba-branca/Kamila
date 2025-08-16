@@ -1,13 +1,23 @@
 # 🤖 Kamila – Assistente Virtual com IA e Voz
 
-Kamila é uma assistente virtual pessoal feita em Python com Processamento de Linguagem Natural (PLN), reconhecimento de voz, TTS, memória persistente, ações contextuais e ativação por palavra-chave (“Jarvis”). Inspirada na ideia de uma IA emocional e acessível, ela foi construída com modularidade, foco em privacidade e controle total local.
+Kamila é uma assistente virtual pessoal feita em Python com Processamento de Linguagem Natural (PLN), reconhecimento de voz, TTS, memória persistente, ações contextuais e ativa<h1 align="center">🤖 Kamila – Assistente Virtual com Voz e IA</h1>
 
-![Banner Kamila](https://img.shields.io/badge/Made%20with-Python-blue?style=flat-square)
-![Licença MIT](https://img.shields.io/github/license/barba-branca/kamila?style=flat-square)
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=flat-square)
+<p align="center">
+  Assistente pessoal em Python, ativada por voz, com memória emocional, ações inteligentes e TTS offline.
+  <br> Feita para evoluir com propósito. 💡
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/feito%20com-Python-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/status-em%20desenvolvimento-yellow?style=flat-square">
+  <img src="https://img.shields.io/github/license/barba-branca/kamila?style=flat-square">
+</p>
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Demonstração da Kamila" width="600">
+</p>
 
 ---
-
 ## ✨ Funcionalidades
 
 - 🗣️ **Comando por voz** com ativação pela palavra-chave “Jarvis”
