@@ -1,0 +1,32 @@
+# Kamila Assistant - Requirements
+# Instale com: pip install -r requirements.txt
+
+# Core dependencies
+python-dotenv>=1.0
+pyttsx3>=2.90
+
+# Speech Recognition
+speechrecognition>=3.10
+pydub>=0.25
+
+# Wake Word Detection (Porcupine)
+pvporcupine>=3.0
+
+# AI/ML
+google-generativeai>=0.7
+tenacity>=8.3
+
+# Computer Vision (Webcam Monitoring)
+opencv-python>=4.8
+numpy>=1.24
+
+# Hardware Integration (opcional)
+pyserial>=3.5
+
+# Development and Testing
+pytest>=7.0
+pytest-cov>=4.0
+
+# Utilities
+requests>=2.31
+python-dateutil>=2.8

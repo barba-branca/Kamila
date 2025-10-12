@@ -1,0 +1,31 @@
+{
+  "user_profile": {
+    "name": "Kauê",
+    "preferences": {},
+    "created_at": "2025-09-24T00:18:26.185496",
+    "last_interaction": "2025-09-24T01:26:10.601334"
+  },
+  "interactions": [
+    {
+      "timestamp": "2025-09-27T17:59:55.333833",
+      "command": "Meu nome é Kauê",
+      "intent": "name_response",
+      "response": "Nome definido: Kauê",
+      "success": true
+    },
+    {
+      "timestamp": "2025-09-27T18:09:38.416120",
+      "command": "que horas são",
+      "intent": "unknown",
+      "response": "Agora são 18:09.",
+      "success": true
+    }
+  ],
+  "learned_commands": {},
+  "statistics": {
+    "total_interactions": 2,
+    "successful_commands": 2,
+    "failed_commands": 0,
+    "wake_ups": 0
+  }
+}
