@@ -185,16 +185,31 @@ class KamilaAssistant:
             else:
                 # Comando não reconhecido - tentar IA generativa
                 logger.info("Comando não reconhecido, tentando modelos de linguagem...")
+                # Avisa que está pensando (opcional, ajuda a diminuir a ansiedade da espera)
+                print("Kamila está pensando...") 
+                
                 context = self._build_context(command)
                 ai_response = self.gemini_engine.chat(command, context)
 
                 if ai_response:
-                    self.tts_engine.speak(ai_response)
-                    # Criar intenção genérica para comandos não reconhecidos
+                    # --- DEBUG: MOSTRAR O QUE A IA DISSE ---
+                    logger.info(f"--- RESPOSTA DA IA ({len(ai_response)} caracteres) ---")
+                    # Imprime no console para você ler, caso o áudio falhe
+                    print(f"\n>>> KAMILA DIZ: {ai_response}\n") 
+                    logger.info("Tentando falar a resposta...")
+                    
+                    try:
+                        self.tts_engine.speak(ai_response)
+                        logger.info("Fala concluída com sucesso.")
+                    except Exception as e:
+                        logger.error(f"ERRO NO TTS ao tentar falar a resposta da IA: {e}")
+                        print("(Erro de áudio, mas a resposta textual está acima)")
+
+                    # Salvar na memória
                     self.memory_manager.add_interaction(command, "conversational_ai", ai_response)
                 else:
-                    self.tts_engine.speak("Desculpe, não entendi esse comando. Pode repetir?")
-
+                    logger.warning("IA retornou resposta vazia.")
+                    self.tts_engine.speak("Desculpe, tive um problema para pensar na resposta.")
         except Exception as e:
             logger.error(f"Erro ao processar comando: {e}")
             self.tts_engine.speak("Ocorreu um erro ao processar seu comando.")

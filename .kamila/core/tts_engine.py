@@ -1,232 +1,105 @@
-#!/usr/bin/env python3
+#!/usr-bin/env python3
 """
 TTS Engine - Text-to-Speech para Kamila
 Motor de síntese de voz usando pyttsx3.
+VERSÃO FINAL ROBUSTA - Cria uma nova instância do motor para cada fala, evitando conflitos de áudio.
 """
 
 import os
-import sys
 import logging
 import pyttsx3
 from dotenv import load_dotenv
+import re
 
-# Carregar variáveis de ambiente
-load_dotenv('.kamila/.env')
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env'))
 
 logger = logging.getLogger(__name__)
 
 class TTSEngine:
-    """Motor de síntese de voz."""
+    """Motor de síntese de voz robusto que reinicializa a cada chamada."""
 
     def __init__(self):
-        """Inicializa o motor TTS."""
-        logger.info("  Inicializando TTS Engine...")
+        """Inicializa as configurações do motor TTS, mas não o motor em si."""
+        logger.info("Inicializando configurações do TTS Engine...")
+        self.voice_id = self._get_portuguese_voice_id()
+        self.rate = int(os.getenv('VOICE_RATE', 180))
+        self.volume = float(os.getenv('VOICE_VOLUME', 0.9))
+        
+        if self.voice_id:
+            logger.info(f"Voz em Português encontrada e configurada.")
+        else:
+            logger.warning("Nenhuma voz em Português encontrada. Usará a voz padrão do sistema.")
+            
+        logger.info(f"Volume: {self.volume}, Velocidade: {self.rate} WPM")
+        logger.info("TTS Engine configurado com sucesso!")
 
+    def _get_portuguese_voice_id(self):
+        """Busca o ID da voz em português uma única vez."""
         try:
-            # Inicializar pyttsx3
-            self.engine = pyttsx3.init()
-
-            # Configurar propriedades da voz
-            self._configure_voice()
-
-            # Configurar volume e velocidade
-            self._configure_audio_settings()
-
-            logger.info(" TTS Engine inicializado com sucesso!")
-
-        except Exception as e:
-            logger.error(f" Erro ao inicializar TTS: {e}")
-            self.engine = None
-
-    def _configure_voice(self):
-        """Configura a voz do sistema."""
-        try:
-            # Listar vozes disponíveis
-            voices = self.engine.getProperty('voices')
-
-            # Tentar encontrar uma voz em português
-            selected_voice = None
+            engine = pyttsx3.init()
+            voices = engine.getProperty('voices')
+            engine.stop() # Libera o motor temporário
             for voice in voices:
-                if 'pt' in voice.languages or 'portuguese' in voice.name.lower():
-                    selected_voice = voice
-                    break
-
-            # Se não encontrou voz PT, usar a primeira disponível
-            if not selected_voice and voices:
-                selected_voice = voices[0]
-
-            if selected_voice:
-                self.engine.setProperty('voice', selected_voice.id)
-                logger.info(f"Voz configurada: {selected_voice.name}")
-
+                # Condição robusta para encontrar a voz correta no Windows
+                if 'brazil' in voice.name.lower() or 'pt-br' in getattr(voice, 'id', '').lower():
+                    return voice.id
         except Exception as e:
-            logger.warning(f"  Erro ao configurar voz: {e}")
+            logger.error(f"Erro ao buscar vozes do sistema: {e}")
+        return None
 
-    def _configure_audio_settings(self):
-        """Configura volume e velocidade da voz."""
+    def _sanitize_text(self, text: str) -> str:
+        """Remove caracteres que pyttsx3 não consegue falar, como emojis."""
+        if not text:
+            return ""
         try:
-            # Configurar volume (0.0 a 1.0)
-            volume = float(os.getenv('VOICE_VOLUME', '0.8'))
-            self.engine.setProperty('volume', max(0.0, min(1.0, volume)))
+            # Padrão de regex aprimorado para remover a maioria dos símbolos não-padrão
+            emoji_pattern = re.compile(
+                "["
+                u"\U0001F600-\U0001F64F"  # emoticons
+                u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                u"\u2600-\u26FF"         # miscellaneous symbols
+                u"\u2700-\u27BF"         # dingbats
+                "]+", flags=re.UNICODE)
+            return emoji_pattern.sub(r'', text)
+        except Exception:
+            return text.encode('ascii', 'ignore').decode('ascii')
 
-            # Configurar velocidade (palavras por minuto)
-            rate = int(os.getenv('VOICE_RATE', '180'))
-            self.engine.setProperty('rate', rate)
-
-            logger.info(f" Volume: {volume}, Velocidade: {rate} WPM")
-
-        except Exception as e:
-            logger.warning(f"  Erro ao configurar áudio: {e}")
-
-    def speak(self, text, wait=True):
-        """
-        Fala o texto fornecido.
-
-        Args:
-            text (str): Texto a ser falado
-            wait (bool): Se deve aguardar o fim da fala
-        """
-        if not self.engine:
-            logger.warning("  TTS Engine não inicializado")
-            print(f"Kamila: {text}")
-            return
-
+    def speak(self, text: str):
+        """Cria um motor de voz, fala o texto e o destrói."""
         if not text or not text.strip():
-            logger.warning("  Texto vazio para falar")
+            logger.warning("Texto vazio para falar. Ignorando.")
             return
 
-        try:
-            logger.debug(f"  Falando: {text}")
-
-            # Falar o texto
-            self.engine.say(text)
-            self.engine.runAndWait() if wait else self.engine.startLoop(False)
-
-            # Pequena pausa para melhor entonação
-            import time
-            time.sleep(0.1)
-
-        except Exception as e:
-            logger.error(f" Erro ao falar: {e}")
-            # Fallback: imprimir o texto
-            print(f"Kamila: {text}")
-
-    def speak_async(self, text):
-        """
-        Fala o texto de forma assíncrona (não bloqueante).
-
-        Args:
-            text (str): Texto a ser falado
-        """
-        if not self.engine:
-            logger.warning("  TTS Engine não inicializado")
-            print(f"Kamila: {text}")
-            return
+        sanitized_text = self._sanitize_text(text)
 
         try:
-            logger.debug(f"  Falando (async): {text}")
-            self.engine.say(text)
-            self.engine.startLoop(False)
+            # --- A MÁGICA ACONTECE AQUI ---
+            # 1. Cria um motor de voz novo, limpo.
+            engine = pyttsx3.init()
+
+            # 2. Configura-o com as propriedades que guardamos
+            if self.voice_id:
+                engine.setProperty('voice', self.voice_id)
+            engine.setProperty('rate', self.rate)
+            engine.setProperty('volume', self.volume)
+            
+            logger.info(f"Preparando para falar: '{sanitized_text[:70]}...'")
+            
+            # 3. Manda falar
+            engine.say(sanitized_text)
+            
+            # 4. Executa e espera
+            engine.runAndWait()
+            
+            # 5. O motor é destruído automaticamente quando a função termina, liberando os recursos de áudio.
+            logger.info("Fala concluída com sucesso.")
 
         except Exception as e:
-            logger.error(f" Erro ao falar async: {e}")
-            print(f"Kamila: {text}")
-
-    def stop_speaking(self):
-        """Para a fala atual."""
-        if self.engine:
-            try:
-                self.engine.stop()
-                logger.debug("  Fala interrompida")
-            except Exception as e:
-                logger.error(f" Erro ao parar fala: {e}")
-
-    def get_available_voices(self):
-        """Retorna lista de vozes disponíveis."""
-        if not self.engine:
-            return []
-
-        try:
-            voices = self.engine.getProperty('voices')
-            return [
-                {
-                    'id': voice.id,
-                    'name': voice.name,
-                    'language': getattr(voice, 'languages', ['unknown'])[0]
-                }
-                for voice in voices
-            ]
-        except Exception as e:
-            logger.error(f" Erro ao listar vozes: {e}")
-            return []
-
-    def set_voice(self, voice_id):
-        """
-        Define uma voz específica.
-
-        Args:
-            voice_id (str): ID da voz a ser usada
-        """
-        if not self.engine:
-            logger.warning("  TTS Engine não inicializado")
-            return False
-
-        try:
-            self.engine.setProperty('voice', voice_id)
-            logger.info(f" Voz alterada para: {voice_id}")
-            return True
-        except Exception as e:
-            logger.error(f" Erro ao alterar voz: {e}")
-            return False
-
-    def set_volume(self, volume):
-        """
-        Define o volume da voz.
-
-        Args:
-            volume (float): Volume entre 0.0 e 1.0
-        """
-        if not self.engine:
-            logger.warning("  TTS Engine não inicializado")
-            return False
-
-        try:
-            volume = max(0.0, min(1.0, float(volume)))
-            self.engine.setProperty('volume', volume)
-            logger.info(f" Volume alterado para: {volume}")
-            return True
-        except Exception as e:
-            logger.error(f" Erro ao alterar volume: {e}")
-            return False
-
-    def set_rate(self, rate):
-        """
-        Define a velocidade da voz.
-
-        Args:
-            rate (int): Velocidade em palavras por minuto
-        """
-        if not self.engine:
-            logger.warning("  TTS Engine não inicializado")
-            return False
-
-        try:
-            rate = int(rate)
-            self.engine.setProperty('rate', rate)
-            logger.info(f" Velocidade alterada para: {rate} WPM")
-            return True
-        except Exception as e:
-            logger.error(f" Erro ao alterar velocidade: {e}")
-            return False
+            logger.error(f"Erro CRÍTICO durante a execução da fala: {e}")
+            print(f"Kamila (erro de voz): {sanitized_text}")
 
     def cleanup(self):
-        """Limpa recursos do TTS."""
-        logger.info(" Limpando TTS Engine...")
-
-        if self.engine:
-            try:
-                self.engine.stop()
-                self.engine = None
-                logger.info(" TTS Engine limpo!")
-            except Exception as e:
-                logger.error(f" Erro ao limpar TTS: {e}")
+        """Não há mais nada para limpar aqui, mas mantemos a função por compatibilidade."""
+        logger.info("TTS Engine não requer limpeza nesta versão.")

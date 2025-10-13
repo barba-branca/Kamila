@@ -45,7 +45,7 @@ class GeminiEngine:
             genai.configure(api_key=self.api_key)
 
             # Inicializar modelo
-            self.model = genai.GenerativeModel('gemini-pro')
+            self.model = genai.GenerativeModel('gemini-pro-latest')
 
             # Configurar parâmetros
             self.generation_config = genai.types.GenerationConfig(
