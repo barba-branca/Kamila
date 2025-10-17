@@ -103,3 +103,23 @@ class TTSEngine:
     def cleanup(self):
         """Não há mais nada para limpar aqui, mas mantemos a função por compatibilidade."""
         logger.info("TTS Engine não requer limpeza nesta versão.")
+        
+    def speak_async(self, text: str):
+        """Versão que não bloqueia o programa, ideal para streaming."""
+        if not text or not text.strip():
+            return
+
+        sanitized_text = self._sanitize_text(text)
+        try:
+            engine = pyttsx3.init()
+            if self.voice_id:
+                engine.setProperty('voice', self.voice_id)
+            engine.setProperty('rate', self.rate)
+            engine.setProperty('volume', self.volume)
+            
+            engine.say(sanitized_text)
+            
+            engine.runAndWait()
+            
+        except Exception as e:
+            logger.error(f"Erro no speak_async: {e}")

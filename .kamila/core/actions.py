@@ -24,10 +24,12 @@ logger = logging.getLogger(__name__)
 class ActionManager:
     """Gerencia e executa ações baseadas em intenções."""
 
-    def __init__(self, tts_engine=None):
+    def __init__(self, tts_engine=None, memory_manager=None):
         """Inicializa o gerenciador de ações."""
         logger.info(" Inicializando Action Manager...")
 
+        # Memoria
+        self.memory_manager = memory_manager
         # Motor TTS
         self.tts_engine = tts_engine
 
@@ -189,7 +191,7 @@ class ActionManager:
             return "Desculpe, não sei como executar essa ação."
 
         try:
-            logger.info(f"⚡ Executando ação: {intent}")
+            logger.info(f" Executando ação: {intent}")
 
             # Pegar handler da ação
             action_data = self.actions[intent]
@@ -510,25 +512,36 @@ Diga "Camila" para me ativar e depois seu comando!
             return "Tentando notificar contatos de emergência..."
 
     def _handle_record_crisis(self, command: str) -> str:
-        """Registra detalhes de uma crise."""
+        """Registra detalhes de uma crise no log de saúde estruturado."""
+        if not self.memory_manager:
+            logger.warning("Memory Manager não está disponível. Não foi possível registrar a crise.")
+            return "Erro: não consigo acessar minha memória para registrar a crise."
+
         try:
-            # Extrair detalhes do comando
-            details = command.replace("registrar crise", "").replace("record crisis", "").strip()
-            if not details:
-                details = "Detalhes não especificados"
+            # Extrai os detalhes do comando
+            details_text = command.replace("registrar crise", "").replace("record crisis", "").strip()
+            if not details_text:
+                details_text = "Nenhum detalhe verbal foi fornecido."
 
-            # Salvar no arquivo de log de crises
-            timestamp = datetime.now().isoformat()
-            crisis_log = f"[{timestamp}] Crise registrada: {details}\n"
+            # Cria um dicionário estruturado para os detalhes
+            crisis_details = {
+                "symptoms": details_text,
+                "suspected_triggers": "Não especificado", # Futuramente, a IA pode tentar inferir isso
+                "duration_minutes": 0 # Pode ser adicionado em uma pergunta de acompanhamento
+            }
 
-            with open("crisis_log.txt", "a", encoding="utf-8") as f:
-                f.write(crisis_log)
+            # Usa a nova função do MemoryManager para salvar o evento
+            self.memory_manager.add_health_event(event_type="crise", details=crisis_details)
+            
+            # Deleta o arquivo antigo crisis_log.txt se ele existir, pois agora tudo fica no memory.json
+            if os.path.exists("crisis_log.txt"):
+                os.remove("crisis_log.txt")
 
-            return "Crise registrada. Vou lembrar desses detalhes para o seu médico."
+            return "Entendido. Registrei os detalhes da crise. Espero que você se sinta melhor em breve."
 
         except Exception as e:
             logger.error(f"Erro ao registrar crise: {e}")
-            return "Erro ao registrar a crise, mas tô aqui pra ajudar."
+            return "Ocorreu um erro ao registrar a crise, mas estou aqui com você."
 
     def _handle_daily_checkin(self, command: str) -> str:
         """Faz check-in diário de saúde."""

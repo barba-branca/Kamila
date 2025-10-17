@@ -45,7 +45,7 @@ class GeminiEngine:
             genai.configure(api_key=self.api_key)
 
             # Inicializar modelo
-            self.model = genai.GenerativeModel('gemini-pro-latest')
+            self.model = genai.GenerativeModel('gemini-flash-latest')
 
             # Configurar parâmetros
             self.generation_config = genai.types.GenerationConfig(
@@ -81,52 +81,32 @@ class GeminiEngine:
             logger.error(f"Erro ao inicializar Gemini Engine: {e}")
             self.model = None
 
-    def generate_response(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> Optional[str]:
-        """
-        Gera uma resposta usando o modelo Gemini.
-
-        Args:
-            prompt (str): Prompt para o modelo
-            context (Optional[Dict[str, Any]]): Contexto adicional
-
-        Returns:
-            str: Resposta gerada ou None se erro
-        """
+    def generate_response_stream(self, prompt: str, context: Optional[Dict[str, Any]] = None):
+        """Gera uma resposta em pedaços (streaming) usando o modelo Gemini."""
         if not self.model:
-            return self._generate_simulated_response(prompt, context)
+            # Simula streaming para o modo offline
+            yield self._generate_simulated_response(prompt, context)
+            return
 
         try:
-            # Preparar contexto
             full_prompt = self._build_prompt(prompt, context)
-
-            # Gerar resposta
-            response = self.model.generate_content(
+            
+            # A mágica do streaming acontece aqui
+            response_stream = self.model.generate_content(
                 full_prompt,
+                stream=True,
                 generation_config=self.generation_config,
                 safety_settings=self.safety_settings
             )
-
-            if response and response.text:
-                # Adicionar à história da conversa
-                self.conversation_history.append({
-                    'prompt': prompt,
-                    'response': response.text,
-                    'timestamp': asyncio.get_event_loop().time()
-                })
-
-                # Manter apenas últimas 50 interações
-                if len(self.conversation_history) > 50:
-                    self.conversation_history = self.conversation_history[-50:]
-
-                logger.info("Resposta gerada pelo Gemini")
-                return response.text.strip()
-            else:
-                logger.warning("Resposta vazia do Gemini")
-                return None
+            
+            # Envia cada pedaço da resposta assim que ele fica pronto
+            for chunk in response_stream:
+                if chunk.text:
+                    yield chunk.text
 
         except Exception as e:
-            logger.error(f"Erro ao gerar resposta com Gemini: {e}")
-            return self._generate_simulated_response(prompt, context)
+            logger.error(f"Erro ao gerar resposta com Gemini (stream): {e}")
+            yield "Desculpe, tive um problema para pensar na resposta."
 
     def _build_prompt(self, user_input: str, context: Optional[Dict[str, Any]] = None) -> str:
         """

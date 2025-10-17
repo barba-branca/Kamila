@@ -2,7 +2,7 @@
 Kamila - Assistente Virtual com IA e Voz
 Loop principal da assistente com wake word detection e processamento de comandos.
 """
-
+import re
 import os
 import sys
 import time
@@ -11,7 +11,7 @@ import threading
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Adicionar o diretório atual ao sys.path para imports relativos funcionarem
+# Adicionando o diretório atual ao sys.path para imports relativos funcionarem
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Importações dos módulos core
@@ -58,7 +58,7 @@ class KamilaAssistant:
         self.tts_engine = TTSEngine()
         self.interpreter = CommandInterpreter()
         self.memory_manager = MemoryManager()
-        self.action_manager = ActionManager(self.tts_engine)
+        self.action_manager = ActionManager(self.tts_engine, self.memory_manager)
         self.gemini_engine = GeminiEngine()
         self.ai_studio = AIStudioIntegration()
 
@@ -143,76 +143,79 @@ class KamilaAssistant:
         logger.info(f"Processando comando: {command}")
 
         try:
-            # Verificar se é resposta à pergunta de nome
+            # --- NOVA LÓGICA DE RECONHECIMENTO DE NOME ---
             user_name = self.memory_manager.get_user_name()
+            # Se a Kamila ainda não sabe o nome do usuário, ela verifica se a resposta é um nome.
             if not user_name and self._is_name_response(command):
                 name = self._extract_name_from_response(command)
                 if name:
                     self.memory_manager.set_user_name(name)
-                    self.tts_engine.speak(f"Prazer em conhecer você, {name}! Agora vou me lembrar do seu nome.")
-                    self.memory_manager.add_interaction(command, "name_response", f"Nome definido: {name}")
-                    return
-
-            # Interpretar comando
+                    response = f"Prazer em te conhecer, {name}! Agora vou me lembrar do seu nome."
+                    self.tts_engine.speak(response)
+                    self.memory_manager.add_interaction(command, "set_name", response)
+                    return # Encerra o processamento aqui, pois a tarefa já foi concluída.
+            # --- FIM DA NOVA LÓGICA ---
+            
             intent = self.interpreter.interpret_command(command)
 
             if intent:
-                # Executar ação
                 response = self.action_manager.execute_action(intent, command)
 
-                # Se não há resposta específica, usar IA generativa
-                if not response or response.startswith("Desculpe"):
-                    logger.info("Usando modelos de linguagem para resposta avançada...")
+                # Se a ação não deu resposta, usa a IA
+                if not response:
+                    logger.info("Ação não retornou resposta. Usando IA generativa...")
                     context = self._build_context(command)
-                    ai_response = self.gemini_engine.chat(command, context)
-
-                    if ai_response:
-                        response = ai_response
-                    else:
-                        response = "Desculpe, não consegui processar sua solicitação com IA."
+                    response = self.gemini_engine.chat(command, context)
 
                 # Responder
                 if response:
                     self.tts_engine.speak(response)
-                    response_text = response
+                    self.memory_manager.add_interaction(command, intent, response)
                 else:
-                    self.tts_engine.speak("Comando executado com sucesso!")
-                    response_text = "Comando executado com sucesso!"
-
-                # Atualizar memória
-                self.memory_manager.add_interaction(command, intent, response_text)
+                    self.tts_engine.speak("Não tenho uma resposta para isso no momento.")
 
             else:
-                # Comando não reconhecido - tentar IA generativa
-                logger.info("Comando não reconhecido, tentando modelos de linguagem...")
-                # Avisa que está pensando (opcional, ajuda a diminuir a ansiedade da espera)
-                print("Kamila está pensando...") 
+                # Comando não reconhecido - tentar IA generativa via streaming
+                logger.info("Comando não reconhecido, usando IA com streaming...")
+                print("Kamila está pensando...")
                 
                 context = self._build_context(command)
-                ai_response = self.gemini_engine.chat(command, context)
-
-                if ai_response:
-                    # --- DEBUG: MOSTRAR O QUE A IA DISSE ---
-                    logger.info(f"--- RESPOSTA DA IA ({len(ai_response)} caracteres) ---")
-                    # Imprime no console para você ler, caso o áudio falhe
-                    print(f"\n>>> KAMILA DIZ: {ai_response}\n") 
-                    logger.info("Tentando falar a resposta...")
+                
+                full_response = ""
+                sentence_buffer = ""
+                
+                # O loop que consome o streaming
+                for chunk in self.gemini_engine.generate_response_stream(command, context):
+                    full_response += chunk
+                    sentence_buffer += chunk
                     
-                    try:
-                        self.tts_engine.speak(ai_response)
-                        logger.info("Fala concluída com sucesso.")
-                    except Exception as e:
-                        logger.error(f"ERRO NO TTS ao tentar falar a resposta da IA: {e}")
-                        print("(Erro de áudio, mas a resposta textual está acima)")
+                    # Procura por finais de frases (., !, ?) para falar
+                    if any(p in sentence_buffer for p in ".!?"):
+                        # Separa a frase completa
+                        parts = re.split(r'([.!?])', sentence_buffer)
+                        # A frase é a parte do texto mais o seu sinal de pontuação
+                        sentence_to_speak = "".join(parts[:2]).strip()
+                        # O que sobrou fica no buffer para a próxima iteração
+                        sentence_buffer = "".join(parts[2:])
 
-                    # Salvar na memória
-                    self.memory_manager.add_interaction(command, "conversational_ai", ai_response)
+                        if sentence_to_speak:
+                            # A primeira resposta é quase instantânea
+                            print(f"Kamila diz: {sentence_to_speak}") 
+                            self.tts_engine.speak(sentence_to_speak)
+                
+                # Fala qualquer texto que tenha sobrado no buffer no final
+                if sentence_buffer.strip():
+                    print(f"Kamila diz: {sentence_buffer.strip()}")
+                    self.tts_engine.speak(sentence_buffer.strip())
+
+                if full_response:
+                    self.memory_manager.add_interaction(command, "conversational_ai", full_response.strip())
                 else:
-                    logger.warning("IA retornou resposta vazia.")
-                    self.tts_engine.speak("Desculpe, tive um problema para pensar na resposta.")
+                    self.tts_engine.speak("Não consegui formular uma resposta.")
+
         except Exception as e:
-            logger.error(f"Erro ao processar comando: {e}")
-            self.tts_engine.speak("Ocorreu um erro ao processar seu comando.")
+            logger.error(f"Erro ao processar comando: {e}", exc_info=True)
+            self.tts_engine.speak("Ocorreu um erro interno ao processar seu comando.")
 
     def _build_context(self, command=None):
         """Constrói contexto para modelos de linguagem."""
@@ -322,6 +325,31 @@ class KamilaAssistant:
         self.tts_engine.cleanup()
         self.gemini_engine.cleanup()
         self.ai_studio.cleanup()
+
+    def _is_name_response(self, command: str) -> bool:
+        """Verifica se o comando parece ser uma resposta à pergunta sobre o nome."""
+        command_lower = command.lower().strip()
+        # Palavras-chave que indicam uma resposta de nome
+        name_starters = ["meu nome é", "eu sou", "me chamo", "é ", "sou "]
+        for starter in name_starters:
+            if command_lower.startswith(starter):
+                return True
+        # Considera uma resposta de 1 a 2 palavras sem verbos como um possível nome
+        if len(command.split()) <= 2:
+            return True
+        return False
+
+    def _extract_name_from_response(self, command: str) -> str:
+        """Extrai o nome do usuário a partir de uma frase de resposta."""
+        command = command.strip()
+        name_starters = ["meu nome é", "eu sou o", "eu sou a", "me chamo", "é ", "sou "]
+        for starter in name_starters:
+            if command.lower().startswith(starter):
+                # Remove a frase inicial e pega o nome, capitalizando-o
+                name = command[len(starter):].strip()
+                return name.capitalize()
+        # Se for só uma ou duas palavras, assume que é o nome
+        return command.capitalize()
 
 def main():
     """Função principal."""

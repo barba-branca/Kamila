@@ -38,33 +38,30 @@ class STTEngine:
         logger.info("STT Engine inicializado com sucesso!")
 
     def _setup_microphone(self):
-        """Configura o microfone e calibra o Recognizer."""
+        """Configura o microfone e calibra o Recognizer de forma manual e robusta."""
         try:
             mic_list = sr.Microphone.list_microphone_names()
             if not mic_list:
                 logger.warning("Nenhum microfone encontrado!")
                 return
             
-            # --- MELHORIA: Seleção de microfone mais inteligente ---
             device_index = None
             for i, name in enumerate(mic_list):
-                # Evita "mapeadores" virtuais que podem causar problemas
                 if "mapeador" not in name.lower() and "mapper" not in name.lower():
                     device_index = i
                     break
-            if device_index is None: device_index = 0 # Fallback para o padrão
+            if device_index is None: device_index = 0
 
             self.microphone = sr.Microphone(device_index=device_index, sample_rate=16000)
-
-            # --- MELHORIA: Calibração Dinâmica e Robusta ---
-            with self.microphone as source:
-                logger.info("Ajustando para ruído ambiente... Fique em silêncio.")
-                self.recognizer.adjust_for_ambient_noise(source, duration=1.5)
-                self.recognizer.dynamic_energy_threshold = True # Habilita adaptação contínua
-                self.recognizer.pause_threshold = 0.8
-                logger.info(f"Limiar de energia inicial ajustado para: {self.recognizer.energy_threshold:.2f}")
+            
+            self.recognizer.dynamic_energy_threshold = False
+            
+            self.recognizer.energy_threshold = 400
+            
+            self.recognizer.pause_threshold = 1.5
 
             logger.info(f"Microfone configurado: {mic_list[device_index]}")
+            logger.info(f"MODO MANUAL: Limiar de energia FIXO em {self.recognizer.energy_threshold} | Pausa de {self.recognizer.pause_threshold}s")
 
         except Exception as e:
             logger.error(f"Erro crítico ao configurar microfone: {e}")
@@ -146,8 +143,8 @@ class STTEngine:
             logger.info(f"Ouvindo comando (timeout de {timeout}s)...")
             with self.microphone as source:
                 # O ajuste dinâmico já está ativo, mas uma pequena recalibração ajuda
-                self.recognizer.adjust_for_ambient_noise(source, duration=0.5) 
-                audio = self.recognizer.listen(source, timeout=timeout, phrase_time_limit=10)
+                logger.info("Aguardando frase do usuário...") 
+                audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=15)
             
             logger.info("Áudio capturado. Transcrevendo...")
             api_key = os.getenv('GOOGLE_API_KEY')

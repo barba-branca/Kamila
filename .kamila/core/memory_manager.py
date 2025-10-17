@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Memory Manager - Gerenciamento de Memória para Kamila
 Sistema de memória persistente para personalização da assistente.
@@ -54,6 +53,7 @@ class MemoryManager:
                 "last_interaction": None
             },
             "interactions": [],
+            "health_log": [],  
             "learned_commands": {},
             "statistics": {
                 "total_interactions": 0,
@@ -196,7 +196,32 @@ class MemoryManager:
                 self.memory_data["user_profile"]["created_at"]
             )).days if self.memory_data["user_profile"].get("created_at") else 0
         }
+    def add_health_event(self, event_type: str, details: Dict[str, Any]):
+        """
+        Adiciona um novo evento ao log de saúde.
 
+        Args:
+            event_type (str): O tipo de evento (ex: 'crise', 'medicacao', 'humor').
+            details (Dict): Um dicionário com detalhes sobre o evento.
+        """
+        try:
+            health_event = {
+                "timestamp": datetime.now().isoformat(),
+                "event_type": event_type,
+                "details": details
+            }
+
+            # Garante que a chave 'health_log' exista
+            if "health_log" not in self.memory_data:
+                self.memory_data["health_log"] = []
+            
+            self.memory_data["health_log"].append(health_event)
+            self._save_memory()
+            logger.info(f"Novo evento de saúde registrado: {event_type}")
+
+        except Exception as e:
+            logger.error(f"Erro ao adicionar evento de saúde: {e}")
+            
     def cleanup_old_memories(self):
         """Remove memórias antigas baseado na configuração."""
         try:
