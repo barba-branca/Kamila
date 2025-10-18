@@ -5,17 +5,20 @@ import os
 import pyautogui
 import time
 import requests
+import pyperclip
 from dotenv import load_dotenv
 
+pyautogui.FAILSAFE = False
+
 # Carregar variáveis de ambiente
-jload_dotenv('.env')
+load_dotenv('KAMILA/.env')
         
 # --- CONFIGURAÇÃO ---
 KNOWN_USER_IMAGE = "kaue.jpg"
 
-KNOWN_USER_NAME = "Kauê"
+KNOWN_USER_NAME = "kaue martins"
 
-WINDOWS_PASSWORD = "SENHA" 
+WINDOWS_PASSWORD = "2020" 
 
 KAMILA_API_URL = "http://127.0.0.1:5000/trigger_greeting" 
 # --------------------
@@ -24,11 +27,30 @@ print("Iniciando sistema de desbloqueio facial...")
 
 # Carrega a sua foto e aprende a te reconhecer
 try:
+    print(f"Carregando a imagem de '{os.path.join('auth', KNOWN_USER_IMAGE)}'...")
     user_image = face_recognition.load_image_file(os.path.join("auth", KNOWN_USER_IMAGE))
-    user_face_encoding = face_recognition.face_encodings(user_image)[0]
+    
+    print("Codificando o rosto. Isso pode levar um momento...")
+    face_encodings_list = face_recognition.face_encodings(user_image)
+    
+    # --- VERIFICAÇÃO PRINCIPAL ---
+    if not face_encodings_list:
+        print("\n!!! ERRO CRÍTICO !!!")
+        print(f"Nenhum rosto foi detectado na imagem '{KNOWN_USER_IMAGE}'.")
+        print("Dicas:")
+        print(" - Use uma foto clara e de frente (como uma selfie ou foto 3x4).")
+        print(" - Garanta que o rosto não esteja de lado ou coberto.")
+        print(" - A imagem deve ter uma boa iluminação.")
+        exit()
+
+    user_face_encoding = face_encodings_list[0]
     print(f"Rosto de '{KNOWN_USER_NAME}' carregado e codificado com sucesso.")
+    
+except FileNotFoundError:
+    print(f"\nERRO: A foto '{KNOWN_USER_IMAGE}' não foi encontrada na pasta 'auth'.")
+    exit()
 except Exception as e:
-    print(f"ERRO: Não foi possível carregar a imagem de autenticação '{KNOWN_USER_IMAGE}'. {e}")
+    print(f"ERRO inesperado ao processar a imagem: {e}")
     exit()
 
 known_face_encodings = [user_face_encoding]
@@ -63,14 +85,38 @@ while not face_recognized:
                 print(f"BEM-VINDO, {KNOWN_USER_NAME}! Desbloqueando o sistema...")
                 face_recognized = True
                 
-                # Simula o pressionar de uma tecla para ativar a tela de senha
-                pyautogui.press('enter') 
-                time.sleep(1) # Espera a tela de senha aparecer
+                print("Aguarde 2 segundos antes da automação...")
+                time.sleep(2)
 
-                # Digita a senha
-                pyautogui.typewrite(WINDOWS_PASSWORD)
+                # --- LÓGICA DE DESBLOQUEIO FINAL (VIA COPY & PASTE) ---
+
+                # 1. Copia a senha para a área de transferência.
+                #    Esta é uma abordagem mais robusta contra bloqueios da UI.
+                print("Copiando a senha para a área de transferência...")
+                pyperclip.copy(WINDOWS_PASSWORD)
+
+                # 2. Ativa a tela de senha.
+                print("Ativando a tela de senha e aguardando...")
                 pyautogui.press('enter')
+                time.sleep(1.5) # Damos tempo para a tela de senha carregar
+
+                # 3. Clica no meio da tela para garantir foco no campo da senha
+                screenWidth, screenHeight = pyautogui.size()
+                pyautogui.click(screenWidth / 2, screenHeight / 2)
+                time.sleep(0.5)
+
+                # 4. Usa o atalho 'ctrl + v' para colar a senha
+                print("Colando a senha...")
+                pyautogui.hotkey('ctrl', 'v')
+                time.sleep(0.5)
                 
+                # 5. Limpa a área de transferência por segurança
+                pyperclip.copy('') 
+
+                # 6. Pressiona Enter para logar
+                print("Pressionando Enter para logar...")
+                pyautogui.press('enter')
+
                 print("Sistema desbloqueado.")
                 
                 # Espera o desktop carregar um pouco
