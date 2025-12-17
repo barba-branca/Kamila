@@ -18,9 +18,11 @@ class EmbeddingStore:
     """
     def __init__(self, llm_interface: LLMInterface, collection_name="kamila_memories"):
         self.llm = llm_interface
-        self.client = chromadb.Client()  # Cliente em memória
+        # Modificado para PersistentClient para garantir que a memória persista entre sessões
+        db_path = os.path.join(project_root, '.kamila', 'kamila_memory_db')
+        self.client = chromadb.PersistentClient(path=db_path)
         self.collection = self.client.get_or_create_collection(name=collection_name)
-        print(f"ChromaDB: Coleção '{collection_name}' carregada com {self.collection.count()} itens.")
+        print(f"ChromaDB: Coleção '{collection_name}' carregada (Persistente em {db_path}) com {self.collection.count()} itens.")
 
     def add_memory(self, text: str, metadata: Dict[str, Any]):
         embedding = self.llm.create_embedding(text)
