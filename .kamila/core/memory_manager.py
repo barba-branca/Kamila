@@ -1,24 +1,83 @@
-import json
+# .kamila/core/memory_manager.py
+
+import sys
+import os
+import re
+
+# --- INÍCIO DA CORREÇÃO DE IMPORT ---
+# Pega o caminho do diretório 'core'
+core_dir = os.path.dirname(os.path.abspath(__file__))
+# Pega o caminho do diretório '.kamila' (um nível acima)
+kamila_dir = os.path.dirname(core_dir)
+# Pega o caminho da raiz do projeto (um nível acima de '.kamila')
+project_root = os.path.dirname(kamila_dir)
+# Adiciona a pasta raiz ao path
+sys.path.insert(0, project_root)
+# --- FIM DA CORREÇÃO DE IMPORT ---
+
+from kamila_ia_models.llm_interface import LLMInterface
+from .context_buffer import ContextBuffer
+from .embedding_store import EmbeddingStore
+from .retriever import Retriever
+from .memory_updater import MemoryUpdater
 
 class MemoryManager:
-    def __init__(self, memory_file='memory.json'):
-        self.memory_file = memory_file
-        self.memory = self.load_memory()
+    """
+    Orquestrador central de todos os sistemas de memória.
+    """
+    def __init__(self, llm_interface: LLMInterface, user_name: str = "usuário"):
+        self.llm = llm_interface
+        self.user_name = user_name
+        self.buffer = ContextBuffer(size=8)
+        self.store = EmbeddingStore(llm_interface)
+        self.retriever = Retriever(self.store)
+        self.updater = MemoryUpdater(self.store)
 
-    def load_memory(self):
-        try:
-            with open(self.memory_file, 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {} # Return an empty dictionary if the file doesn't exist
+    def process_interaction(self, user_input: str):
+        relevant_memories = self.retriever.retrieve_relevant_memories(user_input)
+        recent_context = self.buffer.get_recent_context()
+        
+        prompt = self._build_prompt(user_input, recent_context, relevant_memories)
+        
+        print("\n[PROMPT ENVIADO PARA A IA]:\n---")
+        print(prompt)
+        print("---\n")
+        
+        assistant_response = self.llm.generate_response(prompt)
+        
+        self.buffer.add_interaction(user_input, assistant_response)
+        self.updater.process_and_save_facts(user_input)
+        
+        match = self.updater.fact_patterns["name"].search(user_input)
+        if match:
+            name = next((g for g in match.groups() if g is not None), None)
+            if name:
+                self.user_name = name.strip().capitalize()
+                print(f"[Memory Manager] Nome de usuário atualizado para: {self.user_name}")
 
-    def save_memory(self):
-        with open(self.memory_file, 'w') as f:
-            json.dump(self.memory, f, indent=4)
+        return assistant_response
 
-    def get(self, key):
-        return self.memory.get(key)
+    def _build_prompt(self, user_input, recent_context, relevant_memories):
+        prompt = f"""Você é Kamila, uma assistente de IA amigável e empática conversando com '{self.user_name}'.
 
-    def set(self, key, value):
-        self.memory[key] = value
-        self.save_memory()
+---
+Lembranças Relevantes do Passado (use-as se fizerem sentido para a conversa):
+"""
+        if relevant_memories:
+            for mem in relevant_memories:
+                prompt += f"- {mem}\n"
+        else:
+            prompt += "- Nenhuma.\n"
+        
+        prompt += f"""
+---
+Contexto da Conversa Atual:
+{recent_context}
+
+---
+A mensagem mais recente do usuário é:
+{self.user_name}: "{user_input}"
+
+Sua resposta (como Kamila):
+"""
+        return prompt

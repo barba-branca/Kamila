@@ -1,3 +1,41 @@
-google-generativeai>=0.7
+# Kamila Assistant - Requirements
+# Instale com: pip install -r requirements.txt
+
+# Core dependencies
 python-dotenv>=1.0
+pyttsx3>=2.90
+flask>=2.0
+
+# Speech Recognition
+speechrecognition>=3.10
+pydub>=0.25
+pyaudio>=0.2.11
+
+# Wake Word Detection (Porcupine)
+pvporcupine>=3.0
+
+# AI/ML
+google-generativeai>=0.7
 tenacity>=8.3
+
+# Computer Vision (Webcam Monitoring and Face Recognition)
+# opencv-python>=4.11.0  # Removed due to numpy compatibility issues
+# face-recognition>=1.3  # Removed due to installation issues on Windows
+
+# Hardware Integration
+pyserial>=3.5
+
+# Windows-specific
+pywin32>=306
+
+# Automation
+# pyautogui>=0.9  # Removed due to numpy compatibility issues
+pyperclip>=1.8
+
+# Development and Testing
+pytest>=7.0
+pytest-cov>=4.0
+
+# Utilities
+requests>=2.31
+python-dateutil>=2.8
