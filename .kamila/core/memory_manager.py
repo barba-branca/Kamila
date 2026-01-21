@@ -57,6 +57,24 @@ class MemoryManager:
 
         return assistant_response
 
+    def add_health_event(self, event_type: str, details: dict):
+        """
+        Adiciona um evento de saúde à memória e processa como um fato importante.
+        """
+        import json
+        from datetime import datetime
+
+        timestamp = datetime.now().isoformat()
+        event_description = f"Evento de Saúde ({event_type}): {json.dumps(details, ensure_ascii=False)}"
+
+        print(f"[Memory Manager] Registrando evento de saúde: {event_description}")
+
+        # Salva como um fato na memória de longo prazo
+        self.store.add_memory(event_description)
+
+        # Adiciona ao buffer de contexto imediato para que a IA saiba o que acabou de acontecer
+        self.buffer.add_interaction(f"[SISTEMA] Registro de evento: {event_type}", f"Entendido. Registrei: {details}")
+
     def _build_prompt(self, user_input, recent_context, relevant_memories):
         prompt = f"""Você é Kamila, uma assistente de IA amigável e empática conversando com '{self.user_name}'.
 

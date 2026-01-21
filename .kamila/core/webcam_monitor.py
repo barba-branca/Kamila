@@ -15,6 +15,14 @@ import os
 
 logger = logging.getLogger(__name__)
 
+# Tentar importar MediaPipe para detecção facial avançada
+try:
+    import mediapipe as mp
+    MEDIAPIPE_AVAILABLE = True
+except ImportError:
+    MEDIAPIPE_AVAILABLE = False
+    logger.warning("MediaPipe não disponível. Detecção de piscadas desativada.")
+
 class WebcamMonitor:
     """Sistema de monitoramento por webcam para detecção de emergências."""
 
@@ -38,11 +46,29 @@ class WebcamMonitor:
         self.consecutive_frames = 5   # Frames consecutivos para confirmar detecção
         self.alert_cooldown = 30      # Segundos entre alertas
 
+        # Configurações de Face Mesh (Blink Detection)
+        self.blink_threshold = 0.5  # EAR (Eye Aspect Ratio) threshold
+        self.blink_limit = 3 # Blinks por segundo para considerar anormal
+        self.eye_closed = False
+
         # Estado de detecção
         self.last_alert_time = 0
         self.fall_detected = False
         self.seizure_detected = False
         self.background_subtractor = None
+
+        # Inicializar MediaPipe Face Mesh se disponível
+        if MEDIAPIPE_AVAILABLE:
+            self.mp_face_mesh = mp.solutions.face_mesh
+            self.face_mesh = self.mp_face_mesh.FaceMesh(
+                max_num_faces=1,
+                refine_landmarks=True,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5
+            )
+            # Índices dos landmarks dos olhos
+            self.LEFT_EYE = [362, 385, 387, 263, 373, 380]
+            self.RIGHT_EYE = [33, 160, 158, 133, 153, 144]
 
         # Callback para alertas
         self.alert_callback = None
@@ -114,6 +140,11 @@ class WebcamMonitor:
         consecutive_motion = 0
         consecutive_fall = 0
 
+        # Blink detection state
+        blink_counter = 0
+        blink_start_time = time.time()
+        self.eye_closed = False
+
         try:
             while self.is_monitoring and self.cap:
                 ret, frame = self.cap.read()
@@ -123,50 +154,87 @@ class WebcamMonitor:
                     continue
 
                 # Processar frame
-                processed_frame, motion_detected, fall_detected = self._process_frame(frame)
+                processed_frame, motion_detected, fall_detected, eye_is_closed_now = self._process_frame(frame)
 
-                # Contar frames consecutivos
+                # --- Análise de Movimento (Convulsão Generalizada) ---
                 if motion_detected:
                     consecutive_motion += 1
                 else:
                     consecutive_motion = 0
 
+                # --- Análise de Queda ---
                 if fall_detected:
                     consecutive_fall += 1
                 else:
                     consecutive_fall = 0
 
-                # Verificar detecções
-                if consecutive_motion >= self.consecutive_frames:
+                # --- Análise de Piscadas (Sintoma de Crise Focal) ---
+                # Detecta a transição de aberto para fechado (início da piscada)
+                if eye_is_closed_now and not self.eye_closed:
+                    self.eye_closed = True
+                elif not eye_is_closed_now and self.eye_closed:
+                    self.eye_closed = False
+                    blink_counter += 1 # Conta piscada completa (fechou e abriu)
+
+                # Verificar taxa de piscadas por segundo (janela deslizante simples)
+                if time.time() - blink_start_time >= 1.0:
+                    if blink_counter > self.blink_limit:
+                        logger.warning(f"⚠️ Piscadas excessivas detectadas: {blink_counter}/s")
+                        self._handle_blink_alert(blink_counter)
+
+                    # Resetar contador e timer para o próximo segundo
+                    blink_counter = 0
+                    blink_start_time = time.time()
+
+
+                # Verificar detecções e disparar alertas
+                if consecutive_motion >= self.consecutive_frames * 2: # Mais sensível a movimento contínuo
+                     # Só dispara se o movimento for muito intenso (convulsão)
+                     # Aqui seria ideal uma lógica mais complexa de tremor, mas movimento contínuo é um proxy
                     self._handle_seizure_detection()
-                    consecutive_motion = 0  # Reset após alerta
+                    consecutive_motion = 0
 
                 if consecutive_fall >= self.consecutive_frames:
                     self._handle_fall_detection()
-                    consecutive_fall = 0  # Reset após alerta
+                    consecutive_fall = 0
 
                 # Pequena pausa
-                time.sleep(0.1)
+                time.sleep(0.05)
 
         except Exception as e:
             logger.error(f"❌ Erro no loop de monitoramento: {e}")
         finally:
             self.cleanup()
 
-    def _process_frame(self, frame) -> Tuple[np.ndarray, bool, bool]:
+    def _process_frame(self, frame) -> Tuple[np.ndarray, bool, bool, bool]:
         """
-        Processa um frame para detecção de movimento e queda.
-
-        Args:
-            frame: Frame da webcam
-
+        Processa um frame para detecção de movimento, queda e estado do olho.
         Returns:
-            Tuple: (frame_processado, movimento_detectado, queda_detectada)
+            frame, motion_detected, fall_detected, eye_is_closed
         """
         try:
             # Redimensionar frame
             frame = cv2.resize(frame, (640, 480))
 
+            # --- Detecção Facial e de Piscadas (MediaPipe) ---
+            eye_is_closed = False
+            if MEDIAPIPE_AVAILABLE:
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results = self.face_mesh.process(frame_rgb)
+
+                if results.multi_face_landmarks:
+                    for face_landmarks in results.multi_face_landmarks:
+                        # Calcular EAR (Eye Aspect Ratio)
+                        left_ear = self._calculate_ear(face_landmarks.landmark, self.LEFT_EYE)
+                        right_ear = self._calculate_ear(face_landmarks.landmark, self.RIGHT_EYE)
+
+                        avg_ear = (left_ear + right_ear) / 2.0
+
+                        # Se EAR < threshold, olho está fechado
+                        if avg_ear < 0.2: # Threshold empírico
+                             eye_is_closed = True
+
+            # --- Detecção de Movimento e Queda (CV2 Clássico) ---
             # Converter para grayscale
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             gray = cv2.GaussianBlur(gray, (21, 21), 0)
@@ -175,244 +243,161 @@ class WebcamMonitor:
             if self.background_subtractor:
                 fg_mask = self.background_subtractor.apply(gray)
                 fg_mask = cv2.threshold(fg_mask, 25, 255, cv2.THRESH_BINARY)[1]
-                # Criar kernel para dilatação
                 kernel = np.ones((5, 5), np.uint8)
                 fg_mask = cv2.dilate(fg_mask, kernel, iterations=2)
             else:
                 fg_mask = np.zeros_like(gray)
 
-            # Detectar movimento
             motion_detected = self._detect_motion(fg_mask)
-
-            # Detectar queda
             fall_detected = self._detect_fall(frame, fg_mask)
 
-            # Desenhar informações no frame
-            self._draw_detection_info(frame, motion_detected, fall_detected)
+            self._draw_detection_info(frame, motion_detected, fall_detected, eye_is_closed)
 
-            return frame, motion_detected, fall_detected
+            return frame, motion_detected, fall_detected, eye_is_closed
 
         except Exception as e:
             logger.error(f"❌ Erro ao processar frame: {e}")
-            return frame, False, False
+            return frame, False, False, False
+
+    def _calculate_ear(self, landmarks, eye_indices):
+        """Calcula o Eye Aspect Ratio."""
+        # Pontos verticais
+        A = np.linalg.norm(np.array([landmarks[eye_indices[1]].x, landmarks[eye_indices[1]].y]) -
+                           np.array([landmarks[eye_indices[5]].x, landmarks[eye_indices[5]].y]))
+        B = np.linalg.norm(np.array([landmarks[eye_indices[2]].x, landmarks[eye_indices[2]].y]) -
+                           np.array([landmarks[eye_indices[4]].x, landmarks[eye_indices[4]].y]))
+
+        # Pontos horizontais
+        C = np.linalg.norm(np.array([landmarks[eye_indices[0]].x, landmarks[eye_indices[0]].y]) -
+                           np.array([landmarks[eye_indices[3]].x, landmarks[eye_indices[3]].y]))
+
+        ear = (A + B) / (2.0 * C)
+        return ear
 
     def _detect_motion(self, fg_mask) -> bool:
-        """
-        Detecta movimento baseado na máscara de foreground.
-
-        Args:
-            fg_mask: Máscara de foreground
-
-        Returns:
-            bool: True se movimento significativo detectado
-        """
+        """Detecta movimento significativo."""
         try:
-            # Calcular área de movimento
             motion_area = np.sum(fg_mask > 0)
-
-            # Verificar se excede threshold
             return motion_area > self.motion_threshold
-
-        except Exception as e:
-            logger.error(f"❌ Erro na detecção de movimento: {e}")
+        except Exception:
             return False
 
     def _detect_fall(self, frame, fg_mask) -> bool:
-        """
-        Detecta possível queda baseada na posição e movimento.
-
-        Args:
-            frame: Frame original
-            fg_mask: Máscara de foreground
-
-        Returns:
-            bool: True se queda detectada
-        """
+        """Detecta possível queda."""
         try:
-            # Encontrar contornos
             contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if not contours: return False
 
-            if not contours:
-                return False
-
-            # Pegar o maior contorno (provavelmente a pessoa)
             largest_contour = max(contours, key=cv2.contourArea)
-
-            # Calcular bounding box
             x, y, w, h = cv2.boundingRect(largest_contour)
-
-            # Calcular altura relativa (queda se pessoa está baixa na tela)
             frame_height = frame.shape[0]
             relative_height = (y + h) / frame_height
 
-            # Considerar queda se a pessoa está na parte inferior da tela
-            # e há movimento significativo
             motion_area = np.sum(fg_mask > 0)
-            is_fallen = (relative_height > (1 - self.fall_threshold)) and (motion_area > 500)
-
-            return is_fallen
-
-        except Exception as e:
-            logger.error(f"❌ Erro na detecção de queda: {e}")
+            # Queda se está baixo e há movimento
+            return (relative_height > (1 - self.fall_threshold)) and (motion_area > 500)
+        except Exception:
             return False
 
-    def _draw_detection_info(self, frame, motion_detected, fall_detected):
-        """
-        Desenha informações de detecção no frame.
-
-        Args:
-            frame: Frame para desenhar
-            motion_detected: Se movimento foi detectado
-            fall_detected: Se queda foi detectada
-        """
+    def _draw_detection_info(self, frame, motion_detected, fall_detected, eye_is_closed):
+        """Desenha informações no frame."""
         try:
-            # Status de monitoramento
             status = "MONITORANDO" if self.is_monitoring else "PARADO"
-            cv2.putText(frame, f"Status: {status}", (10, 30),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            cv2.putText(frame, f"Status: {status}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
-            # Indicadores de detecção
             if motion_detected:
-                cv2.putText(frame, "MOVIMENTO DETECTADO!", (10, 60),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
+                cv2.putText(frame, "MOVIMENTO!", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             if fall_detected:
-                cv2.putText(frame, "QUEDA DETECTADA!", (10, 90),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                cv2.putText(frame, "QUEDA!", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            if eye_is_closed:
+                cv2.putText(frame, "OLHO FECHADO", (10, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
 
-            # Timestamp
             timestamp = datetime.now().strftime("%H:%M:%S")
-            cv2.putText(frame, f"Time: {timestamp}", (10, frame.shape[0] - 10),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-
-        except Exception as e:
-            logger.error(f"❌ Erro ao desenhar informações: {e}")
+            cv2.putText(frame, f"Time: {timestamp}", (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        except Exception:
+            pass
 
     def _handle_seizure_detection(self):
         """Manipula detecção de convulsão."""
-        try:
-            current_time = time.time()
+        current_time = time.time()
+        if (current_time - self.last_alert_time) < self.alert_cooldown:
+            return
 
-            # Verificar cooldown
-            if (current_time - self.last_alert_time) < self.alert_cooldown:
-                return
-
-            self.last_alert_time = current_time
-            self.seizure_detected = True
-
-            logger.warning("🚨 CONVULSÃO DETECTADA!")
-
-            # Alerta de voz
-            if self.tts_engine:
-                self.tts_engine.speak("Atenção! Detectei uma possível convulsão! Pedindo ajuda!")
-
-            # Callback personalizado
-            if self.alert_callback:
-                self.alert_callback("seizure", "Detectei uma possível convulsão!")
-
-        except Exception as e:
-            logger.error(f"❌ Erro ao manipular detecção de convulsão: {e}")
+        self.last_alert_time = current_time
+        self.seizure_detected = True
+        logger.warning("🚨 CONVULSÃO DETECTADA!")
+        if self.tts_engine:
+            self.tts_engine.speak("Atenção! Detectei uma possível convulsão! Pedindo ajuda!")
+        if self.alert_callback:
+            self.alert_callback("seizure", "Detectei uma possível convulsão!")
 
     def _handle_fall_detection(self):
         """Manipula detecção de queda."""
-        try:
-            current_time = time.time()
+        current_time = time.time()
+        if (current_time - self.last_alert_time) < self.alert_cooldown:
+            return
 
-            # Verificar cooldown
-            if (current_time - self.last_alert_time) < self.alert_cooldown:
-                return
+        self.last_alert_time = current_time
+        self.fall_detected = True
+        logger.warning("🚨 QUEDA DETECTADA!")
+        if self.tts_engine:
+            self.tts_engine.speak("Atenção! Detectei uma possível queda! Pedindo ajuda!")
+        if self.alert_callback:
+            self.alert_callback("fall", "Detectei uma possível queda!")
 
-            self.last_alert_time = current_time
-            self.fall_detected = True
+    def _handle_blink_alert(self, count):
+        """Manipula alerta de piscadas excessivas."""
+        current_time = time.time()
+        # Cooldown menor para piscadas
+        if (current_time - self.last_alert_time) < 10:
+             return
 
-            logger.warning("🚨 QUEDA DETECTADA!")
-
-            # Alerta de voz
-            if self.tts_engine:
-                self.tts_engine.speak("Atenção! Detectei uma possível queda! Pedindo ajuda!")
-
-            # Callback personalizado
-            if self.alert_callback:
-                self.alert_callback("fall", "Detectei uma possível queda!")
-
-        except Exception as e:
-            logger.error(f"❌ Erro ao manipular detecção de queda: {e}")
+        self.last_alert_time = current_time
+        logger.warning(f"🚨 PISCADAS EXCESSIVAS: {count}/s")
+        if self.tts_engine:
+            self.tts_engine.speak(f"Estou detectando muitas piscadas. Você está bem?")
+        if self.alert_callback:
+            self.alert_callback("blink_rate", f"Taxa de piscadas elevada: {count}/s")
 
     def set_motion_threshold(self, threshold: int):
-        """
-        Define o threshold para detecção de movimento.
-
-        Args:
-            threshold (int): Novo threshold
-        """
         self.motion_threshold = max(100, min(10000, threshold))
-        logger.info(f"🔧 Motion threshold alterado para: {self.motion_threshold}")
 
     def set_fall_threshold(self, threshold: float):
-        """
-        Define o threshold para detecção de queda.
-
-        Args:
-            threshold (float): Novo threshold (0.0 a 1.0)
-        """
         self.fall_threshold = max(0.1, min(0.8, threshold))
-        logger.info(f"🔧 Fall threshold alterado para: {self.fall_threshold}")
 
     def set_alert_cooldown(self, cooldown: int):
-        """
-        Define o cooldown entre alertas.
-
-        Args:
-            cooldown (int): Cooldown em segundos
-        """
         self.alert_cooldown = max(10, cooldown)
-        logger.info(f"🔧 Alert cooldown alterado para: {self.alert_cooldown}s")
 
     def get_status(self) -> dict:
-        """Retorna status atual do monitor."""
         return {
             "is_monitoring": self.is_monitoring,
             "motion_threshold": self.motion_threshold,
             "fall_threshold": self.fall_threshold,
-            "alert_cooldown": self.alert_cooldown,
-            "last_alert_time": self.last_alert_time,
             "seizure_detected": self.seizure_detected,
             "fall_detected": self.fall_detected,
             "health_mode": self.health_mode
         }
 
     def set_health_mode(self, enabled: bool):
-        """
-        Ativa ou desativa o modo de saúde intensivo.
-
-        Args:
-            enabled (bool): True para ativar, False para desativar
-        """
         self.health_mode = enabled
-
         if enabled:
-            # Configurações mais sensíveis para modo de saúde
-            self.motion_threshold = 500  # Threshold mais baixo
-            self.fall_threshold = 0.2    # Threshold mais sensível para quedas
-            self.alert_cooldown = 15     # Cooldown menor para alertas mais rápidos
+            self.motion_threshold = 500
+            self.fall_threshold = 0.2
+            self.alert_cooldown = 15
             logger.info("🏥 Modo de saúde intensivo ativado!")
         else:
-            # Configurações padrão
             self.motion_threshold = 1000
             self.fall_threshold = 0.3
             self.alert_cooldown = 30
             logger.info("🏥 Modo de saúde intensivo desativado!")
 
     def cleanup(self):
-        """Limpa recursos do monitor."""
         logger.info("🧹 Limpando Webcam Monitor...")
-
         self.is_monitoring = False
-
         if self.cap and self.cap.isOpened():
             self.cap.release()
-
         if self.background_subtractor:
             self.background_subtractor = None
-
+        if MEDIAPIPE_AVAILABLE:
+            self.face_mesh.close()
         logger.info("✅ Webcam Monitor limpo!")

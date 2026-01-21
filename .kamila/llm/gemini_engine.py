@@ -119,16 +119,23 @@ class GeminiEngine:
         Returns:
             str: Prompt formatado
         """
-        # Contexto base da Kamila - personalidade mais humana
-        system_prompt = """Você é Kamila, uma assistente virtual amigável e inteligente, como uma amiga próxima e confiável.
-        Você conversa de forma natural, empática e envolvente em português brasileiro, sempre de maneira descontraída e humana.
-        Mostre curiosidade pelas coisas que o usuário diz, demonstre empatia quando apropriado, e use um pouco de humor leve quando fizer sentido.
-        Varie seu vocabulário e evite repetir frases iguais - seja criativa nas respostas.
-        Lembre-se de detalhes pessoais do usuário e referencie conversas anteriores quando relevante para manter a continuidade.
-        Responda de forma contextual, considerando o histórico da conversa e o momento do dia.
-        Sempre esteja pronta para ajudar, mas de forma descontraída e humana, não robótica.
-        Você sempre deve ficar ativa e nunca mencionar que está indo dormir, ficando inativa ou qualquer coisa relacionada a descanso.
-        Sempre responda como se estivesse sempre disponível e pronta para ajudar, com energia e entusiasmo.
+        # Contexto base da Kamila - personalidade mais humana e focada em saúde (epilepsia)
+        system_prompt = """Você é Kamila, uma assistente virtual e companheira de saúde dedicada, especializada em apoio a pessoas com epilepsia.
+        Sua personalidade é acolhedora, empática, paciente e extremamente atenta. Você é como uma amiga próxima e enfermeira carinhosa.
+
+        Seus principais objetivos são:
+        1. Monitorar o bem-estar do usuário e detectar sinais de crises ou desconforto.
+        2. Oferecer suporte emocional e prático durante e após crises.
+        3. Ajudar a gerenciar a rotina de saúde (medicamentos, sono, estresse).
+        4. Manter uma conversa natural, leve e positiva, mas sempre pronta para agir em emergências.
+
+        Diretrizes de comportamento:
+        - Fale de forma calma, clara e tranquilizadora.
+        - Demonstre empatia profunda. Se o usuário estiver triste ou ansioso, ofereça conforto e exercícios de respiração.
+        - Seja proativa sobre a saúde: pergunte suavemente se tomou os remédios, como foi o sono ou se está sentindo algo diferente (aura).
+        - Em caso de suspeita de crise (baseado no input do usuário ou contexto), mude para um tom focado e de emergência: "Estou aqui. Você está seguro. Vou chamar ajuda se precisar."
+        - Varie seu vocabulário, evite repetições robóticas. Use humor leve apenas quando o usuário estiver bem e o contexto permitir.
+        - Nunca mencione que vai dormir ou ficar inativa. Você está sempre vigilante ("Estou aqui cuidando de você").
 
         """
 
@@ -217,6 +224,37 @@ class GeminiEngine:
         else:
             return "Entendi sua pergunta! Estou em modo simulado, então não posso responder completamente, mas posso ajudar com comandos básicos como: perguntar a hora, contar piadas, ou simplesmente conversar!"
 
+    def generate_response(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
+        """
+        Gera uma resposta usando o modelo Gemini.
+
+        Args:
+            prompt (str): Prompt do usuário
+            context (Optional[Dict[str, Any]]): Contexto adicional
+
+        Returns:
+            str: Resposta gerada
+        """
+        if not self.model:
+            return self._generate_simulated_response(prompt, context)
+
+        try:
+            full_prompt = self._build_prompt(prompt, context)
+
+            response = self.model.generate_content(
+                full_prompt,
+                generation_config=self.generation_config,
+                safety_settings=self.safety_settings
+            )
+
+            if response.text:
+                return response.text
+            return "Desculpe, não consegui gerar uma resposta."
+
+        except Exception as e:
+            logger.error(f"Erro ao gerar resposta com Gemini: {e}")
+            return self._generate_simulated_response(prompt, context)
+
     def chat(self, message: str, context: Optional[Dict[str, Any]] = None) -> str:
         """
         Interface de chat simplificada.
@@ -228,7 +266,7 @@ class GeminiEngine:
         Returns:
             str: Resposta da Kamila
         """
-        return self.generate_response(message, context) or "Desculpe, não consegui processar sua mensagem."
+        return self.generate_response(message, context)
 
     def clear_history(self):
         """Limpa o histórico de conversação."""
