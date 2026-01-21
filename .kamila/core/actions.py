@@ -399,6 +399,12 @@ Diga "Camila" para me ativar e depois seu comando!
             # Criar callback para alertas
             def alert_callback(alert_type, message):
                 logger.warning(f"🚨 ALERTA: {alert_type} - {message}")
+                # Registrar o evento na memória se disponível
+                if self.memory_manager and hasattr(self.memory_manager, 'add_health_event'):
+                    self.memory_manager.add_health_event(
+                        event_type=alert_type,
+                        details={"message": message, "timestamp": datetime.now().isoformat()}
+                    )
                 # O TTS já é tratado dentro do WebcamMonitor
 
             # Inicializar monitor se não existir

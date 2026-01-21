@@ -21,7 +21,7 @@ def test_gemini_engine():
     logger.info(" Testando Gemini Engine...")
 
     try:
-        from core.gemini_engine import GeminiEngine
+        from llm.gemini_engine import GeminiEngine
 
         # Inicializar engine
         gemini = GeminiEngine()
@@ -57,7 +57,7 @@ def test_ai_studio_integration():
     logger.info(" Testando AI Studio Integration...")
 
     try:
-        from core.ai_studio_integration import AIStudioIntegration
+        from llm.ai_studio_integration import AIStudioIntegration
 
         # Inicializar integração
         ai_studio = AIStudioIntegration()
@@ -97,8 +97,8 @@ def test_combined_integration():
     logger.info(" Testando integração combinada...")
 
     try:
-        from core.gemini_engine import GeminiEngine
-        from core.ai_studio_integration import AIStudioIntegration
+        from llm.gemini_engine import GeminiEngine
+        from llm.ai_studio_integration import AIStudioIntegration
 
         # Inicializar ambos os motores
         gemini = GeminiEngine()
