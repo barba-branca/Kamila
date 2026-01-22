@@ -1,2 +1,0 @@
-# kamila
-# Assistente_virtual

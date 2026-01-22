@@ -1,0 +1,25 @@
+# Kamila Assistant - Gemini AI Requirements
+# Instale com: pip install -r requirements_gemini.txt
+
+# Google AI Integration
+google-generativeai>=0.7.0
+google-ai-generativelanguage>=0.6.0
+
+# HTTP Client for AI Studio
+requests>=2.31.0
+
+# Async Support
+asyncio-mqtt>=0.13.0
+
+# Additional AI/ML Libraries
+transformers>=4.21.0
+torch>=2.0.0
+numpy>=1.24.0
+
+# Text Processing
+nltk>=3.8
+spacy>=3.6
+
+# Optional: For advanced features
+openai>=0.28.0  # Para comparação/fallback
+anthropic>=0.3.0  # Para comparação/fallback

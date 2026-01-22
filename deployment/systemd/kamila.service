@@ -1,0 +1,16 @@
+[Unit]
+Description=Assistente Virtual Kamila
+After=network-online.target sound.target
+[Service]
+Type=simple
+User=martins
+Group=martins
+# CAMINHOS CORRIGIDOS SEM ESPAÇOS
+WorkingDirectory="/home/martins/Desktop/kamila_instalador_completo/kamila_avancada/.kamila"
+ExecStart="/home/martins/Desktop/kamila_instalador_completo/venv/bin/python3" "/home/martins/Desktop/kamila_instalador_completo/kamila_avancada/.kamila/main.py"
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+[Install]
+WantedBy=multi-user.target

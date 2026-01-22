@@ -1,0 +1,362 @@
+2025-09-27 17:37:13,447 - core.memory_manager - INFO -  Arquivo de memória não encontrado, criando novo
+2025-09-27 17:37:13,448 - core.memory_manager - INFO -  Memory Manager inicializado com sucesso!
+2025-09-27 17:37:13,479 - llm.gemini_engine - INFO -  Usando modo simulado para resposta
+2025-10-11 14:23:03,107 - __main__ - WARNING - Arquivo .env não encontrado. Criando arquivo de exemplo...
+2025-10-11 14:23:03,108 - __main__ - ERROR - Erro fatal: [Errno 2] No such file or directory: '.kamila/.env.example'
+2025-10-11 14:40:43,999 - __main__ - WARNING - Arquivo .env não encontrado. Criando arquivo de exemplo...
+2025-10-11 14:40:43,999 - __main__ - ERROR - Erro fatal: [Errno 2] No such file or directory: '.kamila/.env.example'
+2025-10-11 14:42:04,423 - __main__ - INFO - Inicializando Kamila...
+2025-10-11 14:42:04,424 - core.stt_engine - INFO -  Inicializando STT Engine...
+2025-10-11 14:42:06,019 - core.stt_engine - INFO -   Microfone configurado: Mapeador de som da Microsoft - Input
+2025-10-11 14:42:06,020 - core.stt_engine - WARNING -   Modelo não encontrado: kamila/models/wake_words/camila_pt_windows_v3_0_0.ppn
+2025-10-11 14:42:06,021 - core.stt_engine - INFO -   Usando detecção de wake word baseada em energia + STT
+2025-10-11 14:42:06,022 - core.stt_engine - INFO -  STT Engine inicializado com sucesso!
+2025-10-11 14:42:06,022 - core.tts_engine - INFO -   Inicializando TTS Engine...
+2025-10-11 14:42:06,216 - comtypes.client._code_cache - INFO - Imported existing <module 'comtypes.gen' from 'C:\\Users\\kauen\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes\\gen\\__init__.py'>
+2025-10-11 14:42:06,218 - comtypes.client._code_cache - INFO - Using writeable comtypes cache directory: 'C:\Users\kauen\AppData\Local\Programs\Python\Python313\Lib\site-packages\comtypes\gen'
+2025-10-11 14:42:06,946 - core.tts_engine - INFO - Voz configurada: Microsoft Maria Desktop - Portuguese(Brazil)
+2025-10-11 14:42:06,947 - core.tts_engine - INFO -  Volume: 0.8, Velocidade: 180 WPM
+2025-10-11 14:42:06,947 - core.tts_engine - INFO -  TTS Engine inicializado com sucesso!
+2025-10-11 14:42:06,948 - core.interpreter - INFO -  Inicializando Command Interpreter...
+2025-10-11 14:42:06,948 - core.interpreter - INFO -  Command Interpreter inicializado com sucesso!
+2025-10-11 14:42:06,948 - core.memory_manager - INFO - Inicializando Memory Manager...
+2025-10-11 14:42:06,949 - core.memory_manager - INFO -  Arquivo de memória não encontrado, criando novo
+2025-10-11 14:42:06,949 - core.memory_manager - INFO -  Memory Manager inicializado com sucesso!
+2025-10-11 14:42:06,950 - core.actions - INFO -  Inicializando Action Manager...
+2025-10-11 14:42:06,950 - core.actions - INFO -  Action Manager inicializado com sucesso!
+2025-10-11 14:42:06,985 - llm.ai_studio_integration - INFO -  Inicializando AI Studio Integration...
+2025-10-11 14:42:06,988 - llm.ai_studio_integration - WARNING -   GOOGLE_AI_API_KEY não configurada. Usando modo simulado.
+2025-10-11 14:42:06,988 - __main__ - INFO - Kamila inicializada com sucesso!
+2025-10-11 14:42:06,988 - __main__ - INFO - Iniciando monitoramento de wake word...
+2025-10-11 14:42:08,727 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:10,616 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:12,490 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:14,416 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:16,370 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:18,270 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:20,075 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:22,024 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:23,953 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:25,791 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:27,726 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:29,560 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:31,350 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:33,153 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:35,014 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:36,963 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:38,865 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:40,717 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:42,648 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:44,543 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:46,482 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:48,501 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:50,393 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:52,318 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:54,270 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:56,213 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:58,036 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:42:59,875 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:01,722 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:03,671 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:05,617 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:07,559 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:09,411 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:11,348 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:13,287 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:15,127 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:16,961 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:18,895 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:20,759 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:22,614 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:24,544 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:26,400 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:28,264 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:30,144 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:31,997 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:33,799 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:35,680 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:37,516 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:39,380 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:41,274 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:43,166 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:45,034 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:46,904 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:48,823 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:50,738 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:52,620 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:54,491 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:56,391 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:43:58,245 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:00,165 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:01,965 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:03,894 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:05,828 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:07,700 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:09,502 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:11,358 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:13,269 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:15,232 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:17,021 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:18,988 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:20,901 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:22,801 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:24,654 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:26,479 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:28,428 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:30,217 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:32,160 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:33,976 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:35,887 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:37,804 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:39,714 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:41,481 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:43,358 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:45,256 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:47,027 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:48,896 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:50,760 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:52,637 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:54,532 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:56,357 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:58,129 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:44:59,892 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:01,738 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:03,576 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:05,432 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:07,311 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:09,170 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:10,978 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:12,794 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:14,699 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:16,603 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:18,450 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:20,363 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:22,240 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:24,051 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:25,888 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:27,760 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:29,705 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:31,568 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:33,387 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:35,276 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:37,178 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:39,039 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:40,901 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:42,787 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:44,655 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:46,557 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:48,343 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:50,227 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:52,100 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:53,890 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:55,776 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:57,633 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:45:59,557 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:01,356 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:03,280 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:05,178 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:07,042 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:08,936 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:10,819 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:12,740 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:14,609 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:16,468 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:18,265 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:20,057 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:21,931 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:23,726 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:25,546 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:27,417 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:29,257 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:31,056 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:32,886 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:34,758 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:36,630 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:38,573 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:40,387 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:42,191 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:44,118 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:46,050 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:47,984 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:49,914 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:51,689 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:53,476 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:55,398 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:57,301 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:46:59,117 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:01,074 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:02,979 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:04,792 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:06,728 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:08,674 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:10,550 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:12,355 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:14,234 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:16,156 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:18,056 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:19,877 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:21,745 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:23,654 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:25,456 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:27,244 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:29,086 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:31,041 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:32,896 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:34,745 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:36,602 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:38,380 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:40,282 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:42,135 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:43,990 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:45,879 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:47,755 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:49,601 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:51,530 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:53,389 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:55,233 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:57,081 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:47:58,939 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:00,801 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:02,655 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:04,439 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:06,284 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:08,082 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:09,994 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:11,927 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:13,754 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:15,667 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:17,518 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:19,395 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:21,261 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:23,077 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:24,923 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:26,829 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:28,754 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:30,550 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:32,426 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:34,229 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:36,091 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:37,985 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:39,895 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:41,724 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:43,496 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:45,404 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:47,204 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:49,088 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:50,989 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:52,878 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:54,765 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:56,636 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:48:58,484 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:00,281 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:02,174 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:04,031 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:05,905 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:07,782 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:09,637 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:11,493 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:13,363 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:15,223 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:17,106 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:18,982 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:20,894 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:22,841 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:24,707 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:26,611 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:28,498 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:30,308 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:32,117 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:33,991 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:35,766 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:37,677 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:39,616 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:41,431 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:43,313 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:45,121 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:46,921 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:48,839 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:50,706 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:52,528 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:54,436 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:56,322 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:49:58,183 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:00,017 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:01,913 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:03,676 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:05,537 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:07,421 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:09,265 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:11,145 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:13,024 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:14,868 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:16,815 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:18,714 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:20,575 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:22,399 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:24,224 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:26,062 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:27,838 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:29,756 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:31,618 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:33,461 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:35,283 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:37,123 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:38,921 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:40,859 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:42,780 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:44,676 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:46,545 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:48,438 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:50,318 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:52,262 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:54,133 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:55,953 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:57,858 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:50:59,721 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:01,619 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:03,526 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:05,428 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:07,313 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:09,191 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:11,101 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:12,937 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:14,770 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:16,586 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:18,453 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:20,311 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:22,097 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:23,867 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:25,712 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:27,477 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:29,393 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:31,170 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:33,027 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:34,885 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:36,695 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:38,564 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:40,439 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:42,346 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:44,138 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:46,001 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:47,867 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:49,754 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:51,620 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:53,401 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:55,263 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:57,196 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:51:59,089 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:00,985 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:02,889 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:04,746 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:06,599 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:08,413 - core.stt_engine - ERROR -  Erro ao ouvir comando: listening timed out while waiting for phrase to start
+2025-10-11 14:52:09,443 - __main__ - INFO - Interrupção detectada. Encerrando Kamila...
+2025-10-11 14:52:09,444 - __main__ - INFO - Encerrando Kamila...
+2025-10-11 14:52:14,140 - core.stt_engine - INFO -  Limpando STT Engine...
+2025-10-11 14:52:14,141 - core.stt_engine - INFO -  STT Engine limpo!
+2025-10-11 14:52:14,141 - core.tts_engine - INFO -  Limpando TTS Engine...
+2025-10-11 14:52:14,161 - core.tts_engine - INFO -  TTS Engine limpo!
+2025-10-11 14:52:14,162 - llm.gemini_engine - INFO - Limpando Gemini Engine...
+2025-10-11 14:52:14,163 - llm.gemini_engine - INFO - Gemini Engine limpo!
+2025-10-11 14:52:14,163 - llm.ai_studio_integration - INFO -  Limpando AI Studio Integration...
+2025-10-11 14:52:14,164 - llm.ai_studio_integration - INFO -  AI Studio Integration limpa!
