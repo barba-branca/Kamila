@@ -53,6 +53,7 @@ class KamilaAssistant:
             sys.exit(1)
 
         self.is_awake = False
+        self._running = True
         logger.info("Kamila inicializada com sucesso!")
 
     def check_speak_queue(self):
@@ -70,13 +71,16 @@ class KamilaAssistant:
         logger.info("Iniciando o loop principal da Kamila.")
         self.speak_queue.put("Sistemas online. Aguardando ativação.")
 
+        # Inicia a escuta da wake word em background (event-driven)
+        self.stt_engine.start_listening(callback=self.wake_up)
+
         try:
-            while True:
+            while self._running:
+                # O loop principal agora fica livre para processar a fila de fala
+                # ou outras tarefas de manutenção, sem bloquear na escuta
                 self.check_speak_queue()
-                if not self.is_awake:
-                    if self.stt_engine.block_for_wake_word():
-                        self.wake_up()
                 time.sleep(0.1)
+
         except KeyboardInterrupt:
             logger.info("Interrupção detectada.")
         finally:
@@ -84,6 +88,8 @@ class KamilaAssistant:
             
     def wake_up(self):
         """Acorda a assistente, cumprimenta, ouve um comando, processa e volta a dormir."""
+        # Nota: Este método é chamado pela thread de STT quando a wake word é detectada.
+        # A thread de STT está bloqueada esperando este método retornar, o que é correto.
         self.is_awake = True
         self.greet_user()
 
@@ -125,6 +131,8 @@ class KamilaAssistant:
     def shutdown(self):
         """Encerra a assistente de forma segura."""
         logger.info("Encerrando Kamila...")
+        self._running = False
+        self.stt_engine.stop_listening()
         self.speak_queue.put("Até logo.")
         # Espera um pouco para a última mensagem ser processada e falada
         time.sleep(3)

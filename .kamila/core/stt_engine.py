@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import logging
+import threading
 import speech_recognition as sr
 from pvporcupine import create as create_porcupine
 from dotenv import load_dotenv
@@ -31,6 +32,8 @@ class STTEngine:
         self.recognizer = sr.Recognizer()
         self.microphone = None
         self.porcupine = None
+        self._listening = False
+        self._listen_thread = None
         
         self._setup_microphone()
         self._setup_porcupine()
@@ -95,43 +98,118 @@ class STTEngine:
             logger.error(f"Erro ao configurar Porcupine: {e}")
             self.porcupine = None
 
-    def block_for_wake_word(self):
-        """Ouve continuamente até a wake word ser detectada. Esta é a função principal de escuta passiva."""
+    def start_listening(self, callback):
+        """Inicia a escuta da wake word em background."""
+        if self._listening:
+            logger.warning("Já está ouvindo.")
+            return
+
+        logger.info(f"Iniciando escuta da wake word '{self.wake_word}' em background...")
+        self._listening = True
+        self._listen_thread = threading.Thread(target=self._listen_loop, args=(callback,))
+        self._listen_thread.daemon = True
+        self._listen_thread.start()
+
+    def stop_listening(self):
+        """Para a escuta da wake word."""
+        if not self._listening:
+            return
+
+        logger.info("Parando escuta da wake word...")
+        self._listening = False
+        if self._listen_thread:
+            self._listen_thread.join(timeout=2.0)
+            self._listen_thread = None
+
+    def _listen_loop(self, callback):
+        """Loop de escuta executado em thread separada."""
         if not self.porcupine:
-            logger.error("Porcupine não está configurado. Não é possível detectar wake word. A aplicação ficará em espera.")
-            time.sleep(3600) # Pausa longa para evitar loop infinito
-            return False
+            logger.error("Porcupine não configurado. Abortando loop de escuta.")
+            self._listening = False
+            return
 
         pa = None
         audio_stream = None
+
         try:
             pa = pyaudio.PyAudio()
-            audio_stream = pa.open(
-                rate=self.porcupine.sample_rate,
-                channels=1,
-                format=pyaudio.paInt16,
-                input=True,
-                frames_per_buffer=self.porcupine.frame_length)
 
-            logger.info(f"Microfone aberto. Ouvindo a palavra de ativação '{self.wake_word}'...")
+            while self._listening:
+                try:
+                    # Abre o stream se não estiver aberto
+                    if audio_stream is None:
+                        audio_stream = pa.open(
+                            rate=self.porcupine.sample_rate,
+                            channels=1,
+                            format=pyaudio.paInt16,
+                            input=True,
+                            frames_per_buffer=self.porcupine.frame_length
+                        )
 
-            while True:
-                pcm = audio_stream.read(self.porcupine.frame_length, exception_on_overflow=False)
-                pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
+                    # Lê um frame de áudio
+                    # Note: read() bloqueia por um tempo curto (tamanho do buffer),
+                    # então verificamos _listening no loop.
+                    pcm = audio_stream.read(self.porcupine.frame_length, exception_on_overflow=False)
+                    pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
 
-                keyword_index = self.porcupine.process(pcm)
-                if keyword_index >= 0:
-                    logger.info("Palavra de ativação detectada!")
-                    return True
+                    keyword_index = self.porcupine.process(pcm)
+                    if keyword_index >= 0:
+                        logger.info("Palavra de ativação detectada!")
 
-        except KeyboardInterrupt:
-            return False
+                        # Fecha o stream para liberar o microfone para o speech_recognition
+                        if audio_stream:
+                            audio_stream.stop_stream()
+                            audio_stream.close()
+                            audio_stream = None
+
+                        # Chama o callback (que vai executar wake_up -> listen_for_command)
+                        # Este callback é síncrono e vai bloquear esta thread, o que é desejado
+                        # pois não queremos detectar wake word enquanto estamos processando um comando.
+                        callback()
+
+                        # Ao retornar do callback, o loop continua e o stream será reaberto.
+
+                except OSError as e:
+                    # Pode acontecer se o dispositivo de áudio for desconectado ou estiver ocupado
+                    logger.warning(f"Erro no stream de áudio (tentando recuperar): {e}")
+                    if audio_stream:
+                        audio_stream.close()
+                        audio_stream = None
+                    time.sleep(1) # Espera antes de tentar reabrir
+                except Exception as e:
+                    logger.error(f"Erro inesperado no loop de escuta: {e}", exc_info=True)
+                    if not self._listening:
+                        break
+                    time.sleep(1)
+
+        except Exception as e:
+            logger.critical(f"Falha fatal no loop de áudio: {e}", exc_info=True)
         finally:
             if audio_stream:
                 audio_stream.close()
             if pa:
                 pa.terminate()
-            logger.info("Microfone para wake word fechado.")
+            logger.info("Thread de escuta encerrada.")
+
+    def block_for_wake_word(self):
+        """DEPRECATED: Mantido para compatibilidade, mas não recomendado."""
+        logger.warning("block_for_wake_word está obsoleto. Use start_listening(callback) em vez disso.")
+        # Implementação original bloqueante (simplificada) se precisar fallback
+        if not self.porcupine:
+            time.sleep(3600)
+            return False
+
+        pa = pyaudio.PyAudio()
+        stream = pa.open(rate=self.porcupine.sample_rate, channels=1, format=pyaudio.paInt16, input=True, frames_per_buffer=self.porcupine.frame_length)
+        try:
+            while True:
+                pcm = stream.read(self.porcupine.frame_length, exception_on_overflow=False)
+                pcm = struct.unpack_from("h" * self.porcupine.frame_length, pcm)
+                if self.porcupine.process(pcm) >= 0:
+                    return True
+        finally:
+            stream.close()
+            pa.terminate()
     
     def listen_for_command(self, timeout=10):
         """Ouve e transcreve um comando de voz após a ativação."""
@@ -185,6 +263,7 @@ class STTEngine:
     def cleanup(self):
         """Limpa recursos."""
         logger.info("Limpando STT Engine...")
+        self.stop_listening() # Garante que a thread pare
         if self.porcupine:
             self.porcupine.delete()
         logger.info("STT Engine limpo!")
