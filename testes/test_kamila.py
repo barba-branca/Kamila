@@ -106,22 +106,46 @@ def test_memory_manager():
 
     try:
         from core.memory_manager import MemoryManager
+        from kamila_ia_models.llm_interface import LLMInterface
+        from unittest.mock import MagicMock, patch
 
-        memory = MemoryManager()
+        # Mock LLMInterface
+        mock_llm = MagicMock(spec=LLMInterface)
+        mock_llm.generate_response.return_value = "Resposta de teste"
+        mock_llm.create_embedding.return_value = [0.1] * 768
 
-        # Testar funcionalidades básicas
-        memory.set_user_name("Teste")
-        memory.set_mood("happy")
-        memory.add_interaction("teste", "greeting", "resposta teste")
+        # Patch chromadb.PersistentClient where it is used (in embedding_store)
+        # We need to find where EmbeddingStore is imported from.
+        # core.memory_manager imports EmbeddingStore from .embedding_store
 
-        stats = memory.get_memory_stats()
-        logger.info(f"   Estatísticas: {stats}")
+        # We will patch 'chromadb.PersistentClient' globally or in the module it is used.
+        # Since we have installed chromadb, we can patch the class directly.
+        import chromadb
 
-        logger.info("✅ Memory Manager funcionando!")
-        return True
+        with patch('chromadb.PersistentClient') as MockPersistentClient:
+            mock_client_instance = MockPersistentClient.return_value
+            mock_collection = MagicMock()
+            mock_client_instance.get_or_create_collection.return_value = mock_collection
+            mock_collection.count.return_value = 0
+
+            memory = MemoryManager(mock_llm)
+
+            response = memory.process_interaction("Meu nome é Teste")
+
+            # Verificar se atualizou o nome
+            if memory.user_name == "Teste":
+                 logger.info("   Nome do usuário atualizado corretamente.")
+            else:
+                 logger.error(f"   Falha ao atualizar nome do usuário. Esperado: Teste, Atual: {memory.user_name}")
+                 return False
+
+            logger.info("✅ Memory Manager funcionando!")
+            return True
 
     except Exception as e:
         logger.error(f"❌ Erro no Memory Manager: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def test_action_manager():
@@ -212,7 +236,7 @@ def main():
 
     for test_name, result in results:
         status = "✅ PASSOU" if result else "❌ FALHOU"
-        logger.info(f"{test_name"20"} | {status}")
+        logger.info(f"{test_name:20} | {status}")
 
     logger.info("=" * 50)
     logger.info(f"📈 TOTAL: {passed}/{total} testes passaram")

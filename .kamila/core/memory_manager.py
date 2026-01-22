@@ -3,6 +3,7 @@
 import sys
 import os
 import re
+import threading
 
 # --- INÍCIO DA CORREÇÃO DE IMPORT ---
 # Pega o caminho do diretório 'core'
@@ -46,7 +47,14 @@ class MemoryManager:
         assistant_response = self.llm.generate_response(prompt)
         
         self.buffer.add_interaction(user_input, assistant_response)
-        self.updater.process_and_save_facts(user_input)
+
+        # Otimização: Processar e salvar fatos em background para não bloquear a resposta
+        update_thread = threading.Thread(
+            target=self.updater.process_and_save_facts,
+            args=(user_input,)
+        )
+        update_thread.daemon = True
+        update_thread.start()
         
         match = self.updater.fact_patterns["name"].search(user_input)
         if match:
