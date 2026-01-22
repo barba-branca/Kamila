@@ -7,6 +7,7 @@ VERSÃO FINAL ROBUSTA - Cria uma nova instância do motor para cada fala, evitan
 
 import os
 import logging
+import threading
 import pyttsx3
 from dotenv import load_dotenv
 import re
@@ -110,16 +111,21 @@ class TTSEngine:
             return
 
         sanitized_text = self._sanitize_text(text)
-        try:
-            engine = pyttsx3.init()
-            if self.voice_id:
-                engine.setProperty('voice', self.voice_id)
-            engine.setProperty('rate', self.rate)
-            engine.setProperty('volume', self.volume)
-            
-            engine.say(sanitized_text)
-            
-            engine.runAndWait()
-            
-        except Exception as e:
-            logger.error(f"Erro no speak_async: {e}")
+
+        def _speak_thread():
+            try:
+                engine = pyttsx3.init()
+                if self.voice_id:
+                    engine.setProperty('voice', self.voice_id)
+                engine.setProperty('rate', self.rate)
+                engine.setProperty('volume', self.volume)
+
+                engine.say(sanitized_text)
+
+                engine.runAndWait()
+
+            except Exception as e:
+                logger.error(f"Erro no speak_async: {e}")
+
+        thread = threading.Thread(target=_speak_thread)
+        thread.start()
