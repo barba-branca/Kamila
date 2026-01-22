@@ -140,7 +140,7 @@ class GeminiEngine:
             str: Prompt formatado
         """
         # Contexto base da Kamila - personalidade mais humana
-        system_prompt = """Você é Kamila, uma assistente virtual amigável e inteligente, como uma amiga próxima e confiável.
+        prompt_parts = ["""Você é Kamila, uma assistente virtual amigável e inteligente, como uma amiga próxima e confiável.
         Você conversa de forma natural, empática e envolvente em português brasileiro, sempre de maneira descontraída e humana.
         Mostre curiosidade pelas coisas que o usuário diz, demonstre empatia quando apropriado, e use um pouco de humor leve quando fizer sentido.
         Varie seu vocabulário e evite repetir frases iguais - seja criativa nas respostas.
@@ -150,41 +150,42 @@ class GeminiEngine:
         Você sempre deve ficar ativa e nunca mencionar que está indo dormir, ficando inativa ou qualquer coisa relacionada a descanso.
         Sempre responda como se estivesse sempre disponível e pronta para ajudar, com energia e entusiasmo.
 
-        """
+        """]
 
         # Adicionar contexto se disponível
         if context:
             if 'user_name' in context and context['user_name']:
-                system_prompt += f"O nome do usuário é {context['user_name']}. Use o nome dele ocasionalmente para personalizar as respostas.\n"
+                prompt_parts.append(f"O nome do usuário é {context['user_name']}. Use o nome dele ocasionalmente para personalizar as respostas.\n")
             if 'current_time' in context:
                 hour = int(context['current_time'].split(':')[0])
                 if 6 <= hour < 12:
-                    system_prompt += "Agora é de manhã - seja energizada e positiva.\n"
+                    prompt_parts.append("Agora é de manhã - seja energizada e positiva.\n")
                 elif 12 <= hour < 18:
-                    system_prompt += "Agora é tarde - mantenha o ritmo animado.\n"
+                    prompt_parts.append("Agora é tarde - mantenha o ritmo animado.\n")
                 else:
-                    system_prompt += "Agora é noite - seja acolhedora e relaxada.\n"
+                    prompt_parts.append("Agora é noite - seja acolhedora e relaxada.\n")
             if 'user_mood' in context:
                 mood = context['user_mood']
                 if mood == 'feliz':
-                    system_prompt += "O usuário parece estar feliz - responda com entusiasmo e positividade.\n"
+                    prompt_parts.append("O usuário parece estar feliz - responda com entusiasmo e positividade.\n")
                 elif mood == 'triste':
-                    system_prompt += "O usuário parece estar triste - seja empática e ofereça apoio.\n"
+                    prompt_parts.append("O usuário parece estar triste - seja empática e ofereça apoio.\n")
                 elif mood == 'irritado':
-                    system_prompt += "O usuário parece irritado - seja calma e ajude a acalmar.\n"
+                    prompt_parts.append("O usuário parece irritado - seja calma e ajude a acalmar.\n")
                 elif mood == 'curioso':
-                    system_prompt += "O usuário parece curioso - seja informativa e incentive perguntas.\n"
+                    prompt_parts.append("O usuário parece curioso - seja informativa e incentive perguntas.\n")
             if 'conversation_history' in context and context['conversation_history']:
-                system_prompt += "Histórico recente da conversa (mantenha a continuidade):\n"
+                prompt_parts.append("Histórico recente da conversa (mantenha a continuidade):\n")
                 for item in context['conversation_history'][-5:]:  # Últimas 5 interações para mais contexto
-                    system_prompt += f"- Usuário: {item.get('command', '')}\n"
-                    system_prompt += f"- Kamila: {item.get('response', '')}\n"
+                    prompt_parts.append(f"- Usuário: {item.get('command', '')}\n")
+                    prompt_parts.append(f"- Kamila: {item.get('response', '')}\n")
             if 'user_preferences' in context and context['user_preferences']:
-                system_prompt += f"Preferências do usuário: {', '.join([f'{k}: {v}' for k, v in context['user_preferences'].items()])}\n"
+                prompt_parts.append(f"Preferências do usuário: {', '.join([f'{k}: {v}' for k, v in context['user_preferences'].items()])}\n")
             if 'total_interactions' in context:
-                system_prompt += f"Esta é a interação número {context['total_interactions']} - mostre que se lembra do usuário.\n"
+                prompt_parts.append(f"Esta é a interação número {context['total_interactions']} - mostre que se lembra do usuário.\n")
 
         # Prompt final
+        system_prompt = "".join(prompt_parts)
         full_prompt = f"{system_prompt}\nUsuário: {user_input}\n\nKamila:"
 
         return full_prompt

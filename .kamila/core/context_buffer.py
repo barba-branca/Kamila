@@ -19,11 +19,11 @@ class ContextBuffer:
         if not self.buffer:
             return "Nenhuma conversa recente."
         
-        formatted_context = ""
+        context_parts = []
         for interaction in self.buffer:
-            formatted_context += f"Usuário: {interaction['user']}\n"
-            formatted_context += f"Kamila: {interaction['assistant']}\n"
-        return formatted_context.strip()
+            context_parts.append(f"Usuário: {interaction['user']}\n")
+            context_parts.append(f"Kamila: {interaction['assistant']}\n")
+        return "".join(context_parts).strip()
 
     def clear(self):
         self.buffer.clear()
