@@ -40,6 +40,35 @@ class EmbeddingStore:
         )
         print(f"[Memória Longo Prazo] Fato novo salvo: '{text}'")
 
+    def add_memories(self, texts: List[str], metadatas: List[Dict[str, Any]]):
+        if not texts:
+            return
+
+        embeddings = self.llm.create_embeddings_batch(texts)
+        if not embeddings:
+            return
+
+        current_time = datetime.now()
+        ids = []
+        final_metadatas = []
+
+        for i, text in enumerate(texts):
+            # Using loop index to ensure uniqueness if timestamp is same
+            memory_id = f"mem_{current_time.timestamp()}_{len(text)}_{i}"
+            meta = metadatas[i].copy()
+            meta['timestamp'] = current_time.isoformat()
+            final_metadatas.append(meta)
+            ids.append(memory_id)
+
+        self.collection.add(
+            embeddings=embeddings,
+            documents=texts,
+            metadatas=final_metadatas,
+            ids=ids
+        )
+        for text in texts:
+             print(f"[Memória Longo Prazo] Fato novo salvo: '{text}'")
+
     def search_memories(self, query_text: str, n_results: int = 3) -> List[str]:
         if self.collection.count() == 0:
             return []
