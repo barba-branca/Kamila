@@ -59,3 +59,23 @@ class LLMInterface:
         except Exception as e:
             print(f"Erro ao criar embedding para o texto '{text}': {e}")
             return []
+
+    def create_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
+        """
+        Cria embeddings vetoriais para uma lista de textos (batch).
+
+        Args:
+            texts (List[str]): Lista de textos a serem convertidos em vetores.
+
+        Returns:
+            List[List[float]]: Lista de representações vetoriais (embeddings).
+        """
+        if not texts:
+            return []
+
+        try:
+            result = genai.embed_content(model=self.embedding_model_name, content=texts)
+            return result['embedding']
+        except Exception as e:
+            print(f"Erro ao criar embeddings em batch: {e}")
+            return []

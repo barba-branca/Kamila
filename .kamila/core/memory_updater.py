@@ -21,6 +21,9 @@ class MemoryUpdater:
         """
         Verifica a entrada do usuário em busca de fatos e os salva.
         """
+        facts_to_save = []
+        metadatas_to_save = []
+
         for fact_type, pattern in self.fact_patterns.items():
             match = pattern.search(user_input)
             if match:
@@ -37,4 +40,8 @@ class MemoryUpdater:
                     full_fact = f"O usuário {fact_type.replace('_', ' ')}: {fact_content}."
                     metadata = {"type": "preference", "content": fact_content}
                 
-                self.store.add_memory(full_fact, metadata)
+                facts_to_save.append(full_fact)
+                metadatas_to_save.append(metadata)
+
+        if facts_to_save:
+            self.store.add_memories(facts_to_save, metadatas_to_save)
