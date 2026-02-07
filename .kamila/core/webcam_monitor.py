@@ -78,6 +78,11 @@ class WebcamMonitor:
 
         logger.info("✅ Webcam Monitor inicializado!")
 
+    def _speak_async(self, text):
+        """Executa a fala em uma thread separada para não bloquear o monitoramento."""
+        if self.tts_engine:
+            threading.Thread(target=self.tts_engine.speak, args=(text,), daemon=True).start()
+
     def start_monitoring(self, alert_callback: Optional[Callable] = None):
         """
         Inicia o monitoramento contínuo da webcam.
@@ -326,8 +331,7 @@ class WebcamMonitor:
         self.last_alert_time = current_time
         self.seizure_detected = True
         logger.warning("🚨 CONVULSÃO DETECTADA!")
-        if self.tts_engine:
-            self.tts_engine.speak("Atenção! Detectei uma possível convulsão! Pedindo ajuda!")
+        self._speak_async("Atenção! Detectei uma possível convulsão! Pedindo ajuda!")
         if self.alert_callback:
             self.alert_callback("seizure", "Detectei uma possível convulsão!")
 
@@ -340,8 +344,7 @@ class WebcamMonitor:
         self.last_alert_time = current_time
         self.fall_detected = True
         logger.warning("🚨 QUEDA DETECTADA!")
-        if self.tts_engine:
-            self.tts_engine.speak("Atenção! Detectei uma possível queda! Pedindo ajuda!")
+        self._speak_async("Atenção! Detectei uma possível queda! Pedindo ajuda!")
         if self.alert_callback:
             self.alert_callback("fall", "Detectei uma possível queda!")
 
@@ -354,8 +357,7 @@ class WebcamMonitor:
 
         self.last_alert_time = current_time
         logger.warning(f"🚨 PISCADAS EXCESSIVAS: {count}/s")
-        if self.tts_engine:
-            self.tts_engine.speak(f"Estou detectando muitas piscadas. Você está bem?")
+        self._speak_async(f"Estou detectando muitas piscadas. Você está bem?")
         if self.alert_callback:
             self.alert_callback("blink_rate", f"Taxa de piscadas elevada: {count}/s")
 
