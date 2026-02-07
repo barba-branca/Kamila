@@ -9,6 +9,7 @@ import sys
 import time
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor
 import speech_recognition as sr
 from pvporcupine import create as create_porcupine
 from dotenv import load_dotenv
@@ -32,8 +33,10 @@ class STTEngine:
         self.recognizer = sr.Recognizer()
         self.microphone = None
         self.porcupine = None
+
         self._listening = False
         self._listen_thread = None
+        self.executor = ThreadPoolExecutor(max_workers=1)
         
         self._setup_microphone()
         self._setup_porcupine()
@@ -212,7 +215,22 @@ class STTEngine:
             pa.terminate()
     
     def listen_for_command(self, timeout=10):
-        """Ouve e transcreve um comando de voz após a ativação."""
+        """Ouve e transcreve um comando de voz após a ativação.
+
+        Bloqueia até que o resultado esteja disponível, mas executa o reconhecimento de rede
+        em uma thread separada para não bloquear a thread principal durante a I/O.
+        """
+        future = self.listen_for_command_async(timeout)
+        if future:
+            try:
+                return future.result()
+            except Exception as e:
+                logger.error(f"Erro ao aguardar resultado da transcrição: {e}")
+                return None
+        return None
+
+    def listen_for_command_async(self, timeout=10):
+        """Ouve e inicia a transcrição em background. Retorna um Future."""
         if not self.microphone:
             logger.error("Microfone não disponível, impossível ouvir o comando.")
             return None
@@ -224,34 +242,44 @@ class STTEngine:
                 logger.info("Aguardando frase do usuário...") 
                 audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=15)
             
-            logger.info("Áudio capturado. Transcrevendo...")
-            api_key = os.getenv('GOOGLE_API_KEY')
+            logger.info("Áudio capturado. Iniciando transcrição em background...")
             
-            # --- MELHORIA: Fallback Inteligente ---
-            command = None
-            try:
-                # 1. Tenta com a chave de API (melhor qualidade)
-                if api_key and api_key != "sua_chave_google_speech_aqui":
-                    logger.debug("Tentando transcrever com GOOGLE_API_KEY...")
-                    command = self.recognizer.recognize_google(audio, key=api_key, language='pt-BR')
-                else:
-                    raise sr.RequestError("Chave de API do Google não configurada.")
-            except sr.RequestError as e:
-                # 2. Se a chave falhar (Unauthorized, offline, etc.), tenta o método padrão
-                logger.warning(f"Erro com a API Key ({e}). Usando fallback para o serviço padrão.")
+            def recognize_task():
+                api_key = os.getenv('GOOGLE_API_KEY')
+                command = None
+
+                # Helper function inside task
+                def recognize_call(key=None):
+                    if key:
+                        return self.recognizer.recognize_google(audio, key=key, language='pt-BR')
+                    return self.recognizer.recognize_google(audio, language='pt-BR')
+
                 try:
-                    command = self.recognizer.recognize_google(audio, language='pt-BR')
-                except Exception as inner_e:
-                    logger.error(f"Serviço de reconhecimento padrão também falhou: {inner_e}")
+                    # 1. Tenta com a chave de API (melhor qualidade)
+                    if api_key and api_key != "sua_chave_google_speech_aqui":
+                        logger.debug("Tentando transcrever com GOOGLE_API_KEY...")
+                        command = recognize_call(key=api_key)
+                    else:
+                        raise sr.RequestError("Chave de API do Google não configurada.")
+                except sr.RequestError as e:
+                    # 2. Se a chave falhar (Unauthorized, offline, etc.), tenta o método padrão
+                    logger.warning(f"Erro com a API Key ({e}). Usando fallback para o serviço padrão.")
+                    try:
+                        command = recognize_call()
+                    except Exception as inner_e:
+                        logger.error(f"Serviço de reconhecimento padrão também falhou: {inner_e}")
+                        return None
+                except sr.UnknownValueError:
+                    logger.warning("Não foi possível entender o áudio.")
                     return None
-            except sr.UnknownValueError:
-                logger.warning("Não foi possível entender o áudio.")
+
+                if command:
+                    logger.info(f"Comando reconhecido: '{command}'")
+                    return command.lower()
                 return None
-            
-            if command:
-                logger.info(f"Comando reconhecido: '{command}'")
-                return command.lower()
-            return None
+
+            # Retorna o Future para que o chamador possa esperar ou continuar
+            return self.executor.submit(recognize_task)
 
         except sr.WaitTimeoutError:
             logger.warning("Timeout: Nenhum comando foi falado a tempo.")
@@ -266,4 +294,6 @@ class STTEngine:
         self.stop_listening() # Garante que a thread pare
         if self.porcupine:
             self.porcupine.delete()
+        logger.info("STT Engine limpo!")
+        self.executor.shutdown(wait=False)
         logger.info("STT Engine limpo!")
