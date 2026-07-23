@@ -2,6 +2,7 @@ venv/
 .venv/
 __pycache__/
 *.pyc
+.env
 .kamila/.env
 *.log
 .kamila/kamila_memory_db/
