@@ -43,7 +43,19 @@ class ActionManager:
             "active_actions": []
         }
 
+        # Controlador de Computador (Braços e Pernas)
+        self.computer_control = None
+        self._init_computer_control()
+
         logger.info(" Action Manager inicializado com sucesso!")
+
+    def _init_computer_control(self):
+        """Inicializa o sistema de controle do computador."""
+        try:
+            from core.computer_control import ComputerControl
+            self.computer_control = ComputerControl()
+        except Exception as e:
+            logger.warning(f"Não foi possível inicializar controle do PC: {e}")
 
     def _load_actions(self) -> Dict[str, Dict[str, Any]]:
         """Carrega definições de ações."""
@@ -172,6 +184,11 @@ class ActionManager:
                 "handler": self._handle_medication_reminder,
                 "description": "Lembrete de medicação",
                 "parameters": []
+            },
+            "execute_on_pc": {
+                "handler": self._handle_execute_on_pc,
+                "description": "Executa comando direto no computador (mexer no mouse/teclado)",
+                "parameters": ["instruction"]
             },
         }
 
@@ -568,6 +585,17 @@ Diga "Camila" para me ativar e depois seu comando!
         except Exception as e:
             logger.error(f"Erro no lembrete de medicação: {e}")
             return "Erro no lembrete de medicação, mas tô aqui pra te lembrar."
+
+    def _handle_execute_on_pc(self, command: str) -> str:
+        """Manipula execução de comandos no PC."""
+        if not self.computer_control:
+            return "Meus 'braços e pernas' não estão ativos no momento. Verifique se o sistema de controle está configurado."
+            
+        # Limpar instrução (remover o gatilho se necessário)
+        instruction = command.strip()
+        
+        # Chama o módulo de controle
+        return self.computer_control.execute_instruction(instruction)
 
     def _dim_screen_brightness(self):
         """Diminui brilho da tela."""

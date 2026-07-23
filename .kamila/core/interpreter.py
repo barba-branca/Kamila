@@ -308,6 +308,20 @@ class CommandInterpreter:
                     "É hora de tomar seus remédios."
                 ],
                 "context": "health"
+            },
+            "execute_on_pc": {
+                "patterns": [
+                    r"(?:abrir|abre|inicia|liga|roda)\s+(?:o|a|meu|minha)?\s*(.*)",
+                    r"(?:clica|clicar|aperte|aperta|digita|digite)\s+(?:em|no|na|o|a)?\s*(.*)",
+                    r"(?:mexe|mover|deslocar|arrastar)\s+(.*)",
+                    r"(?:pesquisar|busca|procurar)\s+(?:por)?\s*(.*)\s+(?:no navegador|no chrome|no windows)"
+                ],
+                "responses": [
+                    "Entendido, cuidando disso para você.",
+                    "Já estou indo mexer no computador. Um momento.",
+                    "Braços e pernas ativados! Vou fazer isso agora."
+                ],
+                "context": "operating_system"
             }
         }
 

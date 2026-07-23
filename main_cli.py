@@ -52,7 +52,10 @@ def main():
         from kamila_ia_models.llm_interface import LLMInterface
         from core.memory_manager import MemoryManager
         from core.tts_engine import TTSEngine
-        from core.action_manager import ActionManager # Se existir, ou usar lógica local
+        try:
+            from core.action_manager import ActionManager
+        except ImportError:
+            ActionManager = None
     except ImportError as e:
         print(f"❌ Erro ao importar módulos: {e}")
         print("Verifique se o ambiente virtual está ativo e as dependências instaladas.")

@@ -78,11 +78,16 @@ def main():
 
             # Transcrição (Simples e Gratuita via Google)
             try:
-                # Usar chave se existir, senão default
-                api_key = os.getenv('GOOGLE_API_KEY')
-                if api_key and len(api_key) > 10:
-                    text = recognizer.recognize_google(audio, key=api_key, language='pt-BR')
-                else:
+                # A chave do Gemini (GOOGLE_AI_API_KEY) é diferente da chave do Google Speech API.
+                # Usamos a chave padrão gratuita do SpeechRecognition ou GOOGLE_SPEECH_API_KEY se definida.
+                speech_key = os.getenv('GOOGLE_SPEECH_API_KEY')
+                try:
+                    if speech_key:
+                        text = recognizer.recognize_google(audio, key=speech_key, language='pt-BR')
+                    else:
+                        text = recognizer.recognize_google(audio, language='pt-BR')
+                except sr.RequestError:
+                    # Tenta sem chave caso haja erro de autorização
                     text = recognizer.recognize_google(audio, language='pt-BR')
                 
                 text = text.lower()
@@ -102,9 +107,12 @@ def main():
                         with mic as source:
                             print("👂 Aguardando comando...", end="\r")
                             audio_cmd = recognizer.listen(source, timeout=5, phrase_time_limit=10)
-                            if api_key and len(api_key) > 10:
-                                command = recognizer.recognize_google(audio_cmd, key=api_key, language='pt-BR')
-                            else:
+                            try:
+                                if speech_key:
+                                    command = recognizer.recognize_google(audio_cmd, key=speech_key, language='pt-BR')
+                                else:
+                                    command = recognizer.recognize_google(audio_cmd, language='pt-BR')
+                            except sr.RequestError:
                                 command = recognizer.recognize_google(audio_cmd, language='pt-BR')
                     
                     if command:
